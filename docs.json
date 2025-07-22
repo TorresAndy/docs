@@ -1,20 +1,20 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "CryptoLay Documentation",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#3B82F6",
+    "light": "#60A5FA",
+    "dark": "#1D4ED8"
   },
   "favicon": "/favicon.svg",
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Getting Started",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Introduction",
             "pages": [
               "index",
               "quickstart",
@@ -22,47 +22,82 @@
             ]
           },
           {
-            "group": "Customization",
+            "group": "Authentication",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
-            ]
-          },
-          {
-            "group": "Writing content",
-            "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "guides/api-keys",
+              "guides/rsa-keys",
+              "guides/security"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "API Reference",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Core Endpoints",
             "pages": [
-              "api-reference/introduction"
+              "api-reference/authentication",
+              "api-reference/encryption",
+              "api-reference/decryption"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Customer Management",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "api-reference/customers",
+              "api-reference/manifests",
+              "api-reference/billing"
+            ]
+          },
+          {
+            "group": "Admin Endpoints",
+            "pages": [
+              "api-reference/admin/users",
+              "api-reference/admin/customers",
+              "api-reference/admin/audit"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Integration",
+            "pages": [
+              "guides/getting-started",
+              "guides/sdks",
+              "guides/webhooks"
+            ]
+          },
+          {
+            "group": "Security",
+            "pages": [
+              "guides/security-best-practices",
+              "guides/compliance",
+              "guides/audit-trails"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Database",
+        "groups": [
+          {
+            "group": "Schema",
+            "pages": [
+              "database/schema",
+              "database/migrations",
+              "database/optimization"
+            ]
+          },
+          {
+            "group": "Management",
+            "pages": [
+              "database/backup-restore",
+              "database/monitoring",
+              "database/maintenance"
             ]
           }
         ]
@@ -71,19 +106,19 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
+          "anchor": "Dashboard",
+          "href": "https://app.cryptolay.com",
+          "icon": "layout-dashboard"
         },
         {
-          "anchor": "Community",
-          "href": "https://mintlify.com/community",
-          "icon": "slack"
+          "anchor": "Support",
+          "href": "https://support.cryptolay.com",
+          "icon": "help-circle"
         },
         {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+          "anchor": "Status",
+          "href": "https://status.cryptolay.com",
+          "icon": "activity"
         }
       ]
     }
@@ -95,21 +130,25 @@
   "navbar": {
     "links": [
       {
+        "label": "Pricing",
+        "href": "https://cryptolay.com/pricing"
+      },
+      {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "https://support.cryptolay.com"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "Get Started",
+      "href": "https://app.cryptolay.com/signup"
     }
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "x": "https://x.com/cryptolay",
+      "github": "https://github.com/your-org/cryptolay",
+      "linkedin": "https://linkedin.com/company/cryptolay"
     }
   }
 }
