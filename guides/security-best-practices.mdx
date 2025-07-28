@@ -5,6 +5,10 @@ description: 'Learn security best practices for using CryptoLay'
 
 # Security Best Practices
 
+<div className="text-center mb-8">
+  <img src="/logo/cryptolay_icon.png" alt="CryptoLay Icon" className="h-12 mx-auto mb-4" />
+</div>
+
 This guide covers essential security practices when using CryptoLay to ensure your data remains protected.
 
 ## API Key Security
@@ -108,10 +112,10 @@ Always use HTTPS for API calls:
 
 ```javascript
 // ✅ Good
-const apiUrl = 'https://api.cryptolay.com';
+const apiUrl = 'https://api.cryptolay.com.br';
 
 // ❌ Bad - Never use HTTP
-const apiUrl = 'http://api.cryptolay.com';
+const apiUrl = 'http://api.cryptolay.com.br';
 ```
 
 ### Implement Rate Limiting

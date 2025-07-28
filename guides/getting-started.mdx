@@ -5,6 +5,10 @@ description: 'Learn how to integrate CryptoLay into your application'
 
 # Getting Started with CryptoLay
 
+<div className="text-center mb-8">
+  <img src="/logo/cryptolay_icon.png" alt="CryptoLay Icon" className="h-12 mx-auto mb-4" />
+</div>
+
 This guide will walk you through integrating CryptoLay into your application, from initial setup to production deployment.
 
 ## Prerequisites
@@ -18,7 +22,7 @@ Before you begin, ensure you have:
 
 ## Step 1: Create Your Account
 
-1. Visit [app.cryptolay.com](https://app.cryptolay.com)
+1. Visit [cryptolay.com.br](https://cryptolay.com.br)
 2. Sign up for a free account
 3. Verify your email address
 4. Complete your profile setup
@@ -26,7 +30,7 @@ Before you begin, ensure you have:
 ## Step 2: Create Your First API Key
 
 ```bash
-curl -X POST https://api.cryptolay.com/api/customer/api-keys \
+curl -X POST https://api.cryptolay.com.br/api/customer/api-keys \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{
@@ -40,7 +44,7 @@ curl -X POST https://api.cryptolay.com/api/customer/api-keys \
 A manifest defines which fields should be encrypted:
 
 ```bash
-curl -X POST https://api.cryptolay.com/api/customer/manifests \
+curl -X POST https://api.cryptolay.com.br/api/customer/manifests \
   -H "Content-Type: application/json" \
   -H "X-API-Key: YOUR_API_KEY" \
   -d '{
@@ -53,7 +57,7 @@ curl -X POST https://api.cryptolay.com/api/customer/manifests \
 ## Step 4: Encrypt Your First Data
 
 ```javascript
-const response = await fetch('https://api.cryptolay.com/api/encrypt', {
+const response = await fetch('https://api.cryptolay.com.br/api/encrypt', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -75,7 +79,7 @@ console.log(result.encrypted_data);
 ## Step 5: Decrypt Your Data
 
 ```javascript
-const response = await fetch('https://api.cryptolay.com/api/decrypt', {
+const response = await fetch('https://api.cryptolay.com.br/api/decrypt', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -175,7 +179,7 @@ CRYPTOLAY_ENVIRONMENT=production
 ### Test Encryption
 
 ```bash
-curl -X POST https://api.cryptolay.com/api/encrypt \
+curl -X POST https://api.cryptolay.com.br/api/encrypt \
   -H "Content-Type: application/json" \
   -H "X-API-Key: YOUR_API_KEY" \
   -d '{
@@ -189,7 +193,7 @@ curl -X POST https://api.cryptolay.com/api/encrypt \
 ### Test Decryption
 
 ```bash
-curl -X POST https://api.cryptolay.com/api/decrypt \
+curl -X POST https://api.cryptolay.com.br/api/decrypt \
   -H "Content-Type: application/json" \
   -H "X-API-Key: YOUR_API_KEY" \
   -d '{
@@ -272,6 +276,6 @@ const encryptWithRetry = async (data, maxRetries = 3) => {
 
 Need help with integration?
 
-- **Documentation**: [docs.cryptolay.com](https://docs.cryptolay.com)
-- **Support**: support@cryptolay.com
+- **Documentation**: [docs.cryptolay.com.br](https://docs.cryptolay.com.br)
+- **Support**: support@cryptolay.com.br
 - **Community**: [GitHub Discussions](https://github.com/TorresAndy/cryptolay/discussions) 

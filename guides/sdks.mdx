@@ -5,6 +5,10 @@ description: 'Official SDKs for CryptoLay integration'
 
 # CryptoLay SDKs
 
+<div className="text-center mb-8">
+  <img src="/logo/cryptolay_icon.png" alt="CryptoLay Icon" className="h-12 mx-auto mb-4" />
+</div>
+
 Official SDKs for integrating CryptoLay into your applications. Choose the SDK that matches your programming language.
 
 ## JavaScript/Node.js SDK
@@ -43,7 +47,7 @@ const decrypted = await client.decrypt({
 ```javascript
 const client = new CryptoLay({
   apiKey: process.env.CRYPTOLAY_API_KEY,
-  baseURL: 'https://api.cryptolay.com',
+  baseURL: 'https://api.cryptolay.com.br',
   timeout: 30000,
   retries: 3
 });
@@ -105,7 +109,7 @@ import cryptolay
 
 client = cryptolay.Client(
     api_key=os.environ['CRYPTOLAY_API_KEY'],
-    base_url='https://api.cryptolay.com',
+    base_url='https://api.cryptolay.com.br',
     timeout=30,
     retries=3
 )

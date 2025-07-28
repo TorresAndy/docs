@@ -39,5 +39,5 @@ Changes are automatically deployed to production after pushing to the main branc
 ## Resources
 
 - [CryptoLay Website](https://cryptolay.com)
-- [API Dashboard](https://app.cryptolay.com)
+- [API Dashboard](https://app.cryptolay.com.br)
 - [GitHub Repository](https://github.com/TorresAndy/cryptolay)

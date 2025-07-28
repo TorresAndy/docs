@@ -3,11 +3,11 @@
   "theme": "mint",
   "name": "CryptoLay Documentation",
   "colors": {
-    "primary": "#0ea5e9",
-    "light": "#38bdf8",
-    "dark": "#0284c7"
+    "primary": "#0A1425",
+    "light": "#F97572",
+    "dark": "#0A1425"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/logo/favicon/favicon.ico",
   "navigation": {
     "groups": [
       {
@@ -43,11 +43,11 @@
   },
   "global": {
     "anchors": [
-      {
-        "anchor": "Website",
-        "href": "https://cryptolay.com.br",
-        "icon": "globe"
-      },
+             {
+         "anchor": "Dashboard",
+         "href": "https://cryptolay.com.br/dashboard",
+         "icon": "globe"
+       },
       {
         "anchor": "Documentation",
         "href": "https://docs.cryptolay.com.br/",
@@ -61,21 +61,34 @@
     ]
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/logo/cryptolay.png",
+    "dark": "/logo/cryptolay.png"
   },
   "navbar": {
     "links": [
       {
         "label": "Pricing",
         "href": "https://cryptolay.com.br/dashboard/#pricing"
+      },
+      {
+        "label": "About",
+        "href": "https://cryptolay.com.br/about"
+      },
+      {
+        "label": "Security",
+        "href": "https://cryptolay.com.br/security"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Get Started",
       "href": "https://cryptolay.com.br/signup"
-    }
+    },
+         "secondary": {
+       "type": "button",
+       "label": "Sign In",
+       "href": "https://cryptolay.com.br/login"
+     }
   },
   "footer": {
     "socials": {

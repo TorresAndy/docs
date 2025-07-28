@@ -5,6 +5,10 @@ description: 'Learn how to manage RSA keys for advanced encryption scenarios'
 
 # RSA Keys Guide
 
+<div className="text-center mb-8">
+  <img src="/logo/cryptolay_icon.png" alt="CryptoLay Icon" className="h-12 mx-auto mb-4" />
+</div>
+
 RSA keys provide additional security layers for CryptoLay encryption operations. This guide covers creating, managing, and using RSA keys.
 
 ## Overview
@@ -19,7 +23,7 @@ RSA keys are used for:
 
 ### Via Customer Dashboard
 
-1. Log into your [CryptoLay dashboard](https://app.cryptolay.com)
+1. Log into your [CryptoLay dashboard](https://cryptolay.com.br/dashboard)
 2. Navigate to **RSA Keys** in the sidebar
 3. Click **Create New RSA Key**
 4. Fill in the details:
@@ -32,7 +36,7 @@ RSA keys are used for:
 ### Via API
 
 ```bash
-curl -X POST https://api.cryptolay.com/api/customer/rsa-keys \
+curl -X POST https://api.cryptolay.com.br/api/customer/rsa-keys \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{
@@ -48,21 +52,21 @@ curl -X POST https://api.cryptolay.com/api/customer/rsa-keys \
 ### List RSA Keys
 
 ```bash
-curl -X GET https://api.cryptolay.com/api/customer/rsa-keys \
+curl -X GET https://api.cryptolay.com.br/api/customer/rsa-keys \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Get RSA Key Details
 
 ```bash
-curl -X GET https://api.cryptolay.com/api/customer/rsa-keys/rsa_1234567890abcdef \
+curl -X GET https://api.cryptolay.com.br/api/customer/rsa-keys/rsa_1234567890abcdef \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Update RSA Key
 
 ```bash
-curl -X PUT https://api.cryptolay.com/api/customer/rsa-keys/rsa_1234567890abcdef \
+curl -X PUT https://api.cryptolay.com.br/api/customer/rsa-keys/rsa_1234567890abcdef \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{
@@ -74,7 +78,7 @@ curl -X PUT https://api.cryptolay.com/api/customer/rsa-keys/rsa_1234567890abcdef
 ### Revoke RSA Key
 
 ```bash
-curl -X DELETE https://api.cryptolay.com/api/customer/rsa-keys/rsa_1234567890abcdef \
+curl -X DELETE https://api.cryptolay.com.br/api/customer/rsa-keys/rsa_1234567890abcdef \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -85,7 +89,7 @@ curl -X DELETE https://api.cryptolay.com/api/customer/rsa-keys/rsa_1234567890abc
 RSA keys can be used to wrap AES keys for additional security:
 
 ```javascript
-const response = await fetch('https://api.cryptolay.com/api/encrypt', {
+const response = await fetch('https://api.cryptolay.com.br/api/encrypt', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -106,7 +110,7 @@ const response = await fetch('https://api.cryptolay.com/api/encrypt', {
 RSA keys can be used for digital signatures:
 
 ```bash
-curl -X POST https://api.cryptolay.com/api/sign \
+curl -X POST https://api.cryptolay.com.br/api/sign \
   -H "Content-Type: application/json" \
   -H "X-API-Key: YOUR_API_KEY" \
   -d '{
@@ -124,7 +128,7 @@ Rotate RSA keys regularly:
 
 ```bash
 # Create new key
-curl -X POST https://api.cryptolay.com/api/customer/rsa-keys \
+curl -X POST https://api.cryptolay.com.br/api/customer/rsa-keys \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{
@@ -134,7 +138,7 @@ curl -X POST https://api.cryptolay.com/api/customer/rsa-keys \
   }'
 
 # Revoke old key
-curl -X DELETE https://api.cryptolay.com/api/customer/rsa-keys/OLD_KEY_ID \
+curl -X DELETE https://api.cryptolay.com.br/api/customer/rsa-keys/OLD_KEY_ID \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 

@@ -5,6 +5,10 @@ description: 'Learn about CryptoLay security features and best practices'
 
 # Security Guide
 
+<div className="text-center mb-8">
+  <img src="/logo/cryptolay_icon.png" alt="CryptoLay Icon" className="h-12 mx-auto mb-4" />
+</div>
+
 CryptoLay is built with security as a top priority. This guide covers our security features, best practices, and compliance standards.
 
 ## Security Features
@@ -48,7 +52,7 @@ Rotate your API keys regularly:
 
 ```bash
 # Create new API key
-curl -X POST https://api.cryptolay.com/api/customer/api-keys \
+curl -X POST https://api.cryptolay.com.br/api/customer/api-keys \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{
@@ -57,7 +61,7 @@ curl -X POST https://api.cryptolay.com/api/customer/api-keys \
   }'
 
 # Revoke old key
-curl -X DELETE https://api.cryptolay.com/api/customer/api-keys/OLD_KEY_ID \
+curl -X DELETE https://api.cryptolay.com.br/api/customer/api-keys/OLD_KEY_ID \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -118,7 +122,7 @@ Monitor your encryption operations:
 
 ```bash
 # Get recent activity
-curl -X GET https://api.cryptolay.com/api/customer/logs \
+curl -X GET https://api.cryptolay.com.br/api/customer/logs \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{
     "start_date": "2024-01-01",
@@ -133,7 +137,7 @@ Set up security alerts:
 ```javascript
 // Monitor for suspicious activity
 const checkActivity = async () => {
-  const response = await fetch('https://api.cryptolay.com/api/customer/logs/recent');
+  const response = await fetch('https://api.cryptolay.com.br/api/customer/logs/recent');
   const logs = await response.json();
   
   // Check for unusual patterns
@@ -170,7 +174,7 @@ const checkActivity = async () => {
 ### Reporting Security Issues
 
 Report security vulnerabilities to:
-- **Email**: security@cryptolay.com
+- **Email**: security@cryptolay.com.br
 - **Responsible Disclosure**: [Security Policy](https://cryptolay.com/security)
 
 ## Security Checklist
@@ -214,6 +218,6 @@ Report security vulnerabilities to:
 ## Support
 
 For security-related questions:
-- **Security Team**: security@cryptolay.com
-- **Support**: support@cryptolay.com
+- **Security Team**: security@cryptolay.com.br
+- **Support**: support@cryptolay.com.br
 - **Emergency**: +1-555-SECURITY 

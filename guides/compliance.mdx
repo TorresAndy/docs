@@ -5,6 +5,10 @@ description: 'Learn about CryptoLay compliance with GDPR, HIPAA, PCI-DSS, and ot
 
 # Compliance Guide
 
+<div className="text-center mb-8">
+  <img src="/logo/cryptolay_icon.png" alt="CryptoLay Icon" className="h-12 mx-auto mb-4" />
+</div>
+
 CryptoLay is designed to help you meet various compliance requirements. This guide covers how to use CryptoLay to achieve compliance with major standards.
 
 ## GDPR Compliance
@@ -280,7 +284,7 @@ const securityLogger = {
 const availabilityMonitor = {
   async checkServiceHealth() {
     try {
-      const response = await fetch('https://api.cryptolay.com/health');
+      const response = await fetch('https://api.cryptolay.com.br/health');
       return response.ok;
     } catch (error) {
       console.error('Service unavailable:', error);
