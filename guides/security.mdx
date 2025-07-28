@@ -1,0 +1,219 @@
+---
+title: 'Security'
+description: 'Learn about CryptoLay security features and best practices'
+---
+
+# Security Guide
+
+CryptoLay is built with security as a top priority. This guide covers our security features, best practices, and compliance standards.
+
+## Security Features
+
+### Encryption Standards
+
+- **AES-256-GCM**: Industry-standard authenticated encryption
+- **RSA-2048/4096**: For key wrapping and digital signatures
+- **AWS KMS Integration**: Secure key management
+- **Key Rotation**: Automatic key rotation and management
+
+### Authentication & Authorization
+
+- **API Key Authentication**: Required for all API requests
+- **JWT Tokens**: For administrative operations
+- **Role-Based Access Control**: Granular permissions
+- **Rate Limiting**: Prevents abuse and DDoS attacks
+
+### Audit & Compliance
+
+- **Request Logging**: Complete audit trail
+- **Access Monitoring**: Real-time security monitoring
+- **Compliance Standards**: GDPR, HIPAA, PCI-DSS, SOC 2
+- **Data Retention**: Configurable retention policies
+
+## Security Best Practices
+
+### API Key Security
+
+```javascript
+// ❌ Bad - Hardcoded API key
+const apiKey = 'cl_live_1234567890abcdef1234567890abcdef';
+
+// ✅ Good - Environment variable
+const apiKey = process.env.CRYPTOLAY_API_KEY;
+```
+
+### Key Rotation
+
+Rotate your API keys regularly:
+
+```bash
+# Create new API key
+curl -X POST https://api.cryptolay.com/api/customer/api-keys \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "name": "New Production Key",
+    "permissions": ["encrypt", "decrypt"]
+  }'
+
+# Revoke old key
+curl -X DELETE https://api.cryptolay.com/api/customer/api-keys/OLD_KEY_ID \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+### Environment Security
+
+```bash
+# Use environment variables
+export CRYPTOLAY_API_KEY="your_api_key"
+export CRYPTOLAY_ENVIRONMENT="production"
+
+# Don't commit secrets
+echo "*.env" >> .gitignore
+echo "secrets/" >> .gitignore
+```
+
+### Network Security
+
+- Use HTTPS for all API calls
+- Implement proper TLS configuration
+- Use VPN for sensitive operations
+- Monitor network traffic
+
+## Compliance Standards
+
+### GDPR Compliance
+
+- **Data Minimization**: Only encrypt necessary fields
+- **Right to Erasure**: Easy data deletion
+- **Data Portability**: Export encrypted data
+- **Privacy by Design**: Built-in privacy controls
+
+### HIPAA Compliance
+
+- **Encryption at Rest**: All data encrypted
+- **Encryption in Transit**: TLS 1.3 required
+- **Access Controls**: Role-based permissions
+- **Audit Logging**: Complete audit trail
+
+### PCI-DSS Compliance
+
+- **Card Data Encryption**: Secure payment data
+- **Key Management**: AWS KMS integration
+- **Access Monitoring**: Real-time monitoring
+- **Regular Audits**: Automated compliance checks
+
+### SOC 2 Type II
+
+- **Security Controls**: Comprehensive security
+- **Availability**: 99.9% uptime SLA
+- **Processing Integrity**: Data integrity checks
+- **Confidentiality**: Data protection measures
+
+## Security Monitoring
+
+### Real-Time Monitoring
+
+Monitor your encryption operations:
+
+```bash
+# Get recent activity
+curl -X GET https://api.cryptolay.com/api/customer/logs \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "start_date": "2024-01-01",
+    "end_date": "2024-01-31"
+  }'
+```
+
+### Alert Configuration
+
+Set up security alerts:
+
+```javascript
+// Monitor for suspicious activity
+const checkActivity = async () => {
+  const response = await fetch('https://api.cryptolay.com/api/customer/logs/recent');
+  const logs = await response.json();
+  
+  // Check for unusual patterns
+  const suspiciousActivity = logs.filter(log => 
+    log.status_code === 401 || log.status_code === 403
+  );
+  
+  if (suspiciousActivity.length > 10) {
+    // Send alert
+    sendSecurityAlert(suspiciousActivity);
+  }
+};
+```
+
+## Incident Response
+
+### Security Breach Response
+
+1. **Immediate Actions**:
+   - Revoke compromised API keys
+   - Review access logs
+   - Contact CryptoLay support
+
+2. **Investigation**:
+   - Analyze audit logs
+   - Identify affected data
+   - Document incident details
+
+3. **Recovery**:
+   - Create new API keys
+   - Update security policies
+   - Implement additional monitoring
+
+### Reporting Security Issues
+
+Report security vulnerabilities to:
+- **Email**: security@cryptolay.com
+- **Responsible Disclosure**: [Security Policy](https://cryptolay.com/security)
+
+## Security Checklist
+
+### Before Production
+
+- [ ] API keys stored securely
+- [ ] HTTPS enabled for all requests
+- [ ] Rate limiting configured
+- [ ] Audit logging enabled
+- [ ] Key rotation schedule set
+- [ ] Monitoring alerts configured
+
+### Regular Maintenance
+
+- [ ] Review access logs monthly
+- [ ] Rotate API keys quarterly
+- [ ] Update security policies
+- [ ] Test incident response plan
+- [ ] Review compliance status
+
+## Security Resources
+
+<CardGroup cols={2}>
+  <Card
+    title="API Keys Guide"
+    href="/guides/api-keys"
+    icon="key"
+  >
+    Learn about API key security
+  </Card>
+  <Card
+    title="Compliance Guide"
+    href="/guides/compliance"
+    icon="shield-check"
+  >
+    Understand compliance requirements
+  </Card>
+</CardGroup>
+
+## Support
+
+For security-related questions:
+- **Security Team**: security@cryptolay.com
+- **Support**: support@cryptolay.com
+- **Emergency**: +1-555-SECURITY 

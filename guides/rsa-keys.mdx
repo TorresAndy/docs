@@ -1,0 +1,204 @@
+---
+title: 'RSA Keys'
+description: 'Learn how to manage RSA keys for advanced encryption scenarios'
+---
+
+# RSA Keys Guide
+
+RSA keys provide additional security layers for CryptoLay encryption operations. This guide covers creating, managing, and using RSA keys.
+
+## Overview
+
+RSA keys are used for:
+- Key wrapping and unwrapping
+- Digital signatures
+- Advanced encryption scenarios
+- Compliance requirements
+
+## Creating RSA Keys
+
+### Via Customer Dashboard
+
+1. Log into your [CryptoLay dashboard](https://app.cryptolay.com)
+2. Navigate to **RSA Keys** in the sidebar
+3. Click **Create New RSA Key**
+4. Fill in the details:
+   - **Name**: A descriptive name for the key
+   - **Key Size**: 2048 or 4096 bits
+   - **Purpose**: Encryption, Signing, or Both
+   - **Expiration**: Optional expiration date
+5. Click **Create Key**
+
+### Via API
+
+```bash
+curl -X POST https://api.cryptolay.com/api/customer/rsa-keys \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "name": "Production RSA Key",
+    "key_size": 2048,
+    "purpose": "encryption",
+    "expires_at": "2025-12-31T23:59:59Z"
+  }'
+```
+
+## RSA Key Management
+
+### List RSA Keys
+
+```bash
+curl -X GET https://api.cryptolay.com/api/customer/rsa-keys \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+### Get RSA Key Details
+
+```bash
+curl -X GET https://api.cryptolay.com/api/customer/rsa-keys/rsa_1234567890abcdef \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+### Update RSA Key
+
+```bash
+curl -X PUT https://api.cryptolay.com/api/customer/rsa-keys/rsa_1234567890abcdef \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "name": "Updated RSA Key Name",
+    "purpose": "encryption"
+  }'
+```
+
+### Revoke RSA Key
+
+```bash
+curl -X DELETE https://api.cryptolay.com/api/customer/rsa-keys/rsa_1234567890abcdef \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+## Using RSA Keys
+
+### Key Wrapping
+
+RSA keys can be used to wrap AES keys for additional security:
+
+```javascript
+const response = await fetch('https://api.cryptolay.com/api/encrypt', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-API-Key': 'your_api_key'
+  },
+  body: JSON.stringify({
+    manifest_id: 'manifest-uuid',
+    data: {
+      email: 'user@example.com'
+    },
+    rsa_key_id: 'rsa_1234567890abcdef'
+  })
+});
+```
+
+### Digital Signatures
+
+RSA keys can be used for digital signatures:
+
+```bash
+curl -X POST https://api.cryptolay.com/api/sign \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{
+    "rsa_key_id": "rsa_1234567890abcdef",
+    "data": "data_to_sign",
+    "algorithm": "SHA256"
+  }'
+```
+
+## Security Best Practices
+
+### Key Rotation
+
+Rotate RSA keys regularly:
+
+```bash
+# Create new key
+curl -X POST https://api.cryptolay.com/api/customer/rsa-keys \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "name": "New RSA Key",
+    "key_size": 2048,
+    "purpose": "encryption"
+  }'
+
+# Revoke old key
+curl -X DELETE https://api.cryptolay.com/api/customer/rsa-keys/OLD_KEY_ID \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+### Key Storage
+
+- Store private keys securely
+- Use hardware security modules (HSM) for production
+- Never commit keys to version control
+- Use environment variables for key references
+
+### Compliance
+
+RSA keys help meet compliance requirements:
+- **PCI-DSS**: For payment data encryption
+- **HIPAA**: For healthcare data protection
+- **SOC 2**: For security controls
+
+## Error Handling
+
+### Invalid RSA Key
+
+```json
+{
+  "error": "invalid_rsa_key",
+  "message": "RSA key not found or inactive",
+  "code": 400
+}
+```
+
+### Key Expired
+
+```json
+{
+  "error": "rsa_key_expired",
+  "message": "RSA key has expired",
+  "code": 400
+}
+```
+
+### Insufficient Permissions
+
+```json
+{
+  "error": "insufficient_permissions",
+  "message": "RSA key cannot be used for this operation",
+  "code": 403
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="API Keys"
+    href="/guides/api-keys"
+    icon="key"
+  >
+    Learn about API key management
+  </Card>
+  <Card
+    title="Security Best Practices"
+    href="/guides/security-best-practices"
+    icon="shield"
+  >
+    Learn more about security
+  </Card>
+</CardGroup> 
