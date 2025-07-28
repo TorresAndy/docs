@@ -1,0 +1,332 @@
+---
+title: 'Security Best Practices'
+description: 'Learn security best practices for using CryptoLay'
+---
+
+# Security Best Practices
+
+This guide covers essential security practices when using CryptoLay to ensure your data remains protected.
+
+## API Key Security
+
+### Store Keys Securely
+
+Never hardcode API keys in your source code:
+
+```javascript
+// ❌ Bad - Never do this
+const apiKey = "sk_live_1234567890abcdef";
+
+// ✅ Good - Use environment variables
+const apiKey = process.env.CRYPTOLAY_API_KEY;
+```
+
+### Use Environment Variables
+
+```bash
+# Development
+export CRYPTOLAY_API_KEY="your_api_key"
+
+# Production
+export CRYPTOLAY_API_KEY="your_production_api_key"
+```
+
+### Rotate Keys Regularly
+
+- Rotate API keys every 90 days
+- Use different keys for different environments
+- Monitor key usage for suspicious activity
+
+## Data Handling
+
+### Validate Input Data
+
+Always validate data before encryption:
+
+```javascript
+// Validate email format
+const isValidEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+// Validate before encryption
+if (!isValidEmail(userData.email)) {
+  throw new Error('Invalid email format');
+}
+```
+
+### Sanitize Sensitive Data
+
+Remove unnecessary sensitive data:
+
+```javascript
+// Remove sensitive data from logs
+const sanitizeForLogs = (data) => {
+  const { ssn, creditCard, ...safeData } = data;
+  return safeData;
+};
+```
+
+## Manifest Management
+
+### Use Specific Field Lists
+
+Define exactly which fields to encrypt:
+
+```json
+{
+  "name": "User Profile Manifest",
+  "fields": ["email", "phone", "ssn", "address"],
+  "description": "Encrypts user personal information"
+}
+```
+
+### Separate Manifests by Data Type
+
+Create different manifests for different data types:
+
+```json
+// Payment data
+{
+  "name": "Payment Manifest",
+  "fields": ["cardNumber", "cvv", "expiryDate"]
+}
+
+// Personal data
+{
+  "name": "Personal Data Manifest", 
+  "fields": ["email", "phone", "address"]
+}
+```
+
+## Network Security
+
+### Use HTTPS Always
+
+Always use HTTPS for API calls:
+
+```javascript
+// ✅ Good
+const apiUrl = 'https://api.cryptolay.com';
+
+// ❌ Bad - Never use HTTP
+const apiUrl = 'http://api.cryptolay.com';
+```
+
+### Implement Rate Limiting
+
+Add rate limiting to your application:
+
+```javascript
+const rateLimiter = {
+  requests: 0,
+  windowStart: Date.now(),
+  
+  checkLimit() {
+    const now = Date.now();
+    if (now - this.windowStart > 60000) {
+      this.requests = 0;
+      this.windowStart = now;
+    }
+    
+    if (this.requests >= 100) {
+      throw new Error('Rate limit exceeded');
+    }
+    
+    this.requests++;
+  }
+};
+```
+
+## Error Handling
+
+### Don't Log Sensitive Data
+
+```javascript
+// ❌ Bad - Logging sensitive data
+console.log('Encrypting:', { email: 'user@example.com', ssn: '123-45-6789' });
+
+// ✅ Good - Log only safe data
+console.log('Encrypting user data with manifest:', manifestId);
+```
+
+### Handle Errors Gracefully
+
+```javascript
+try {
+  const encrypted = await cryptolay.encrypt({
+    manifestId: 'user-manifest',
+    data: userData
+  });
+} catch (error) {
+  if (error.status === 401) {
+    // Handle authentication error
+    console.error('Invalid API key');
+  } else if (error.status === 429) {
+    // Handle rate limiting
+    console.error('Rate limit exceeded');
+  } else {
+    // Handle other errors
+    console.error('Encryption failed:', error.message);
+  }
+}
+```
+
+## Storage Security
+
+### Secure Metadata Storage
+
+Store metadata securely alongside encrypted data:
+
+```javascript
+// Store encrypted data and metadata
+const encryptedRecord = {
+  id: 'user-123',
+  encryptedData: encrypted.data,
+  metadata: encrypted.meta,
+  createdAt: new Date()
+};
+```
+
+### Backup Security
+
+Ensure backups are also encrypted:
+
+```javascript
+// Encrypt backup data
+const backupData = {
+  users: encryptedUsers,
+  metadata: {
+    backupDate: new Date(),
+    version: '1.0'
+  }
+};
+```
+
+## Monitoring and Auditing
+
+### Log Security Events
+
+```javascript
+const securityLogger = {
+  logEncryption(manifestId, fieldCount) {
+    console.log(`[SECURITY] Encrypted ${fieldCount} fields with manifest ${manifestId}`);
+  },
+  
+  logDecryption(manifestId, fieldCount) {
+    console.log(`[SECURITY] Decrypted ${fieldCount} fields with manifest ${manifestId}`);
+  },
+  
+  logError(error) {
+    console.error(`[SECURITY] Error: ${error.message}`);
+  }
+};
+```
+
+### Monitor Usage Patterns
+
+Track unusual activity:
+
+```javascript
+const usageMonitor = {
+  trackRequest(manifestId, dataSize) {
+    // Track request patterns
+    this.requests.push({
+      manifestId,
+      dataSize,
+      timestamp: Date.now()
+    });
+  },
+  
+  detectAnomalies() {
+    // Implement anomaly detection
+    const recentRequests = this.requests.filter(
+      req => Date.now() - req.timestamp < 3600000
+    );
+    
+    if (recentRequests.length > 1000) {
+      console.warn('Unusual request volume detected');
+    }
+  }
+};
+```
+
+## Compliance Considerations
+
+### GDPR Compliance
+
+- Implement data minimization
+- Provide data portability
+- Support right to be forgotten
+
+```javascript
+// Data minimization example
+const minimizeData = (userData) => {
+  const { email, phone, ssn } = userData;
+  return { email, phone, ssn }; // Only encrypt necessary fields
+};
+```
+
+### HIPAA Compliance
+
+- Encrypt all PHI (Protected Health Information)
+- Implement access controls
+- Maintain audit trails
+
+```javascript
+// HIPAA-compliant encryption
+const encryptPHI = async (patientData) => {
+  return await cryptolay.encrypt({
+    manifestId: 'phi-manifest',
+    data: {
+      name: patientData.name,
+      ssn: patientData.ssn,
+      diagnosis: patientData.diagnosis
+    }
+  });
+};
+```
+
+## Testing Security
+
+### Test Error Scenarios
+
+```javascript
+describe('Security Tests', () => {
+  test('should not log sensitive data', () => {
+    const consoleSpy = jest.spyOn(console, 'log');
+    
+    encryptUserData({ email: 'test@example.com', ssn: '123-45-6789' });
+    
+    expect(consoleSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining('123-45-6789')
+    );
+  });
+  
+  test('should validate input data', () => {
+    expect(() => {
+      encryptUserData({ email: 'invalid-email' });
+    }).toThrow('Invalid email format');
+  });
+});
+```
+
+## Checklist
+
+- [ ] API keys stored in environment variables
+- [ ] HTTPS used for all API calls
+- [ ] Input data validated before encryption
+- [ ] Sensitive data not logged
+- [ ] Rate limiting implemented
+- [ ] Error handling in place
+- [ ] Metadata stored securely
+- [ ] Usage monitoring enabled
+- [ ] Regular key rotation scheduled
+- [ ] Compliance requirements met
+
+## Resources
+
+- [API Reference](/api-reference/authentication) - Complete API documentation
+- [Security Guide](/guides/security) - General security information
+- [Compliance Guide](/guides/compliance) - Compliance standards 

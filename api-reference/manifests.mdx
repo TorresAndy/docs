@@ -1,0 +1,300 @@
+---
+title: 'Manifests'
+description: 'Create and manage encryption manifests for CryptoLay'
+---
+
+# Manifests API
+
+Manifests define which fields should be encrypted in your data. This API allows you to create, list, update, and delete manifests.
+
+## Create Manifest
+
+Create a new encryption manifest.
+
+<RequestExample>
+```bash
+curl -X POST https://api.cryptolay.com/api/customer/manifests \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{
+    "name": "User Data Manifest",
+    "fields": ["email", "phone", "ssn"],
+    "description": "Encrypts sensitive user information"
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "id": "manifest-uuid-123",
+  "name": "User Data Manifest",
+  "fields": ["email", "phone", "ssn"],
+  "description": "Encrypts sensitive user information",
+  "status": "active",
+  "created_at": "2024-01-01T00:00:00Z",
+  "updated_at": "2024-01-01T00:00:00Z"
+}
+```
+</ResponseExample>
+
+### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | Yes | A descriptive name for the manifest |
+| `fields` | array | Yes | Array of field names to encrypt |
+| `description` | string | No | Optional description of the manifest |
+
+### Response Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Unique manifest identifier |
+| `name` | string | Manifest name |
+| `fields` | array | Array of encrypted field names |
+| `description` | string | Manifest description |
+| `status` | string | Manifest status (active/inactive) |
+| `created_at` | string | ISO 8601 timestamp |
+| `updated_at` | string | ISO 8601 timestamp |
+
+## List Manifests
+
+Retrieve all manifests for your account.
+
+<RequestExample>
+```bash
+curl -X GET https://api.cryptolay.com/api/customer/manifests \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "manifests": [
+    {
+      "id": "manifest-uuid-123",
+      "name": "User Data Manifest",
+      "fields": ["email", "phone", "ssn"],
+      "description": "Encrypts sensitive user information",
+      "status": "active",
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "limit": 10
+}
+```
+</ResponseExample>
+
+### Query Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `page` | integer | 1 | Page number for pagination |
+| `limit` | integer | 10 | Number of manifests per page |
+| `status` | string | all | Filter by status (active/inactive/all) |
+
+## Get Manifest
+
+Retrieve a specific manifest by ID.
+
+<RequestExample>
+```bash
+curl -X GET https://api.cryptolay.com/api/customer/manifests/manifest-uuid-123 \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "id": "manifest-uuid-123",
+  "name": "User Data Manifest",
+  "fields": ["email", "phone", "ssn"],
+  "description": "Encrypts sensitive user information",
+  "status": "active",
+  "created_at": "2024-01-01T00:00:00Z",
+  "updated_at": "2024-01-01T00:00:00Z"
+}
+```
+</ResponseExample>
+
+## Update Manifest
+
+Update an existing manifest.
+
+<RequestExample>
+```bash
+curl -X PUT https://api.cryptolay.com/api/customer/manifests/manifest-uuid-123 \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{
+    "name": "Updated User Data Manifest",
+    "fields": ["email", "phone", "ssn", "address"],
+    "description": "Updated description"
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "id": "manifest-uuid-123",
+  "name": "Updated User Data Manifest",
+  "fields": ["email", "phone", "ssn", "address"],
+  "description": "Updated description",
+  "status": "active",
+  "created_at": "2024-01-01T00:00:00Z",
+  "updated_at": "2024-01-01T12:00:00Z"
+}
+```
+</ResponseExample>
+
+### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | No | New manifest name |
+| `fields` | array | No | Updated array of field names |
+| `description` | string | No | Updated description |
+
+## Delete Manifest
+
+Delete a manifest. This action cannot be undone.
+
+<RequestExample>
+```bash
+curl -X DELETE https://api.cryptolay.com/api/customer/manifests/manifest-uuid-123 \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "message": "Manifest deleted successfully"
+}
+```
+</ResponseExample>
+
+## Error Responses
+
+### 400 Bad Request
+
+```json
+{
+  "error": "Validation failed",
+  "details": {
+    "name": "Name is required",
+    "fields": "At least one field must be specified"
+  }
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "error": "Invalid API key"
+}
+```
+
+### 403 Forbidden
+
+```json
+{
+  "error": "Insufficient permissions"
+}
+```
+
+### 404 Not Found
+
+```json
+{
+  "error": "Manifest not found"
+}
+```
+
+## Examples
+
+### JavaScript
+
+```javascript
+// Create a manifest
+const createManifest = async () => {
+  const response = await fetch('https://api.cryptolay.com/api/customer/manifests', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-Key': 'your_api_key'
+    },
+    body: JSON.stringify({
+      name: 'Payment Data Manifest',
+      fields: ['cardNumber', 'cvv', 'expiryDate'],
+      description: 'Encrypts payment information'
+    })
+  });
+  
+  return response.json();
+};
+
+// List manifests
+const listManifests = async () => {
+  const response = await fetch('https://api.cryptolay.com/api/customer/manifests', {
+    headers: {
+      'X-API-Key': 'your_api_key'
+    }
+  });
+  
+  return response.json();
+};
+```
+
+### Python
+
+```python
+import requests
+
+# Create a manifest
+def create_manifest():
+    response = requests.post(
+        'https://api.cryptolay.com/api/customer/manifests',
+        headers={
+            'Content-Type': 'application/json',
+            'X-API-Key': 'your_api_key'
+        },
+        json={
+            'name': 'Payment Data Manifest',
+            'fields': ['cardNumber', 'cvv', 'expiryDate'],
+            'description': 'Encrypts payment information'
+        }
+    )
+    return response.json()
+
+# List manifests
+def list_manifests():
+    response = requests.get(
+        'https://api.cryptolay.com/api/customer/manifests',
+        headers={'X-API-Key': 'your_api_key'}
+    )
+    return response.json()
+```
+
+## Best Practices
+
+1. **Use descriptive names** for your manifests to easily identify their purpose
+2. **Include all required fields** in the fields array to ensure consistent encryption
+3. **Keep manifests focused** - create separate manifests for different data types
+4. **Test manifests** with sample data before using in production
+5. **Monitor usage** to ensure manifests are being used correctly
+
+## Security Notes
+
+- Manifests are tied to your API key
+- Only active manifests can be used for encryption
+- Deleted manifests cannot be recovered
+- Field names are case-sensitive 

@@ -5,88 +5,52 @@ description: 'Get up and running with CryptoLay in under 5 minutes'
 
 # Quick Start Guide
 
-Get CryptoLay up and running in under 5 minutes. This guide will walk you through setting up the development environment and making your first API call.
+Get CryptoLay up and running in under 5 minutes. This guide will walk you through setting up your account and making your first API call.
 
 ## Prerequisites
 
-Before you begin, make sure you have the following installed:
+Before you begin, make sure you have:
 
-- **Node.js 18+** - [Download here](https://nodejs.org/)
-- **Docker & Docker Compose** - [Download here](https://www.docker.com/products/docker-desktop/)
-- **PostgreSQL** - Included with Docker setup
-- **AWS Account** - For KMS and Lambda deployment (optional for local development)
+- A web browser
+- Basic knowledge of REST APIs
+- Your application ready for integration
 
-## Step 1: Clone the Repository
+## Step 1: Create Your Account
 
-```bash
-git clone https://github.com/TorresAndy/cryptolay.git
-cd cryptolay
-```
+1. Visit [cryptolay.com](https://cryptolay.com)
+2. Click **Get Started** or **Sign Up**
+3. Fill in your details and create your account
+4. Verify your email address
 
-## Step 2: Start the Database
+## Step 2: Create Your First API Key
 
-```bash
-docker-compose up postgres -d
-```
+1. Log into your CryptoLay dashboard
+2. Navigate to **API Keys** in the sidebar
+3. Click **Create New API Key**
+4. Fill in the details:
+   - **Name**: A descriptive name (e.g., "Production API Key")
+   - **Permissions**: Select "encrypt" and "decrypt"
+5. Click **Create Key**
+6. Copy your API key (you'll only see it once!)
 
-This starts a PostgreSQL database on port 5432.
-
-## Step 3: Apply Database Schema
-
-```bash
-psql -h localhost -U postgres -d cryptolay -f database/schema.sql
-```
-
-If you don't have `psql` installed, you can use Docker:
-
-```bash
-docker exec -i cryptolay_postgres_1 psql -U postgres -d cryptolay < database/schema.sql
-```
-
-## Step 4: Start the Main API
-
-```bash
-cd main-api
-npm install
-npm run dev
-```
-
-The API will be available at `http://localhost:3000`.
-
-## Step 5: Create Your First API Key
-
-Before you can make API calls, you need an API key. For development, you can create a test key:
-
-```bash
-curl -X POST http://localhost:3000/api/customer/api-keys \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Test API Key",
-    "permissions": ["encrypt", "decrypt"]
-  }'
-```
-
-## Step 6: Create a Manifest
+## Step 3: Create a Manifest
 
 A manifest defines which fields should be encrypted in your data:
 
-```bash
-curl -X POST http://localhost:3000/api/customer/manifests \
-  -H "Content-Type: application/json" \
-  -H "X-API-Key: YOUR_API_KEY" \
-  -d '{
-    "name": "User Data Manifest",
-    "fields": ["email", "phone", "ssn"],
-    "description": "Encrypts sensitive user information"
-  }'
-```
+1. Go to **Manifests** in your dashboard
+2. Click **Create New Manifest**
+3. Fill in the details:
+   - **Name**: "User Data Manifest"
+   - **Fields**: Add the field names you want to encrypt (e.g., "email", "phone", "ssn")
+   - **Description**: "Encrypts sensitive user information"
+4. Click **Create Manifest**
 
-## Step 7: Encrypt Your First Data
+## Step 4: Encrypt Your First Data
 
-Now you can encrypt sensitive data:
+Now you can encrypt sensitive data using your manifest:
 
 ```bash
-curl -X POST http://localhost:3000/api/encrypt \
+curl -X POST https://api.cryptolay.com/api/encrypt \
   -H "Content-Type: application/json" \
   -H "X-API-Key: YOUR_API_KEY" \
   -d '{
@@ -99,12 +63,12 @@ curl -X POST http://localhost:3000/api/encrypt \
   }'
 ```
 
-## Step 8: Decrypt Your Data
+## Step 5: Decrypt Your Data
 
 To decrypt the data, you'll need the encrypted response and metadata:
 
 ```bash
-curl -X POST http://localhost:3000/api/decrypt \
+curl -X POST https://api.cryptolay.com/api/decrypt \
   -H "Content-Type: application/json" \
   -H "X-API-Key: YOUR_API_KEY" \
   -d '{
@@ -118,65 +82,87 @@ curl -X POST http://localhost:3000/api/decrypt \
       "identifier": "REQUEST_UUID",
       "encrypted_key": "KMS_ENCRYPTED_AES_KEY",
       "key_fingerprint": "KMS_KEY_ID",
-      "timestamp": "2024-01-01T00:00:00Z"
+      "timestamp": "2024-01-01T00:00:00Z",
+      "algorithm": "AES-256-GCM"
     }
   }'
 ```
 
+## JavaScript Example
+
+```javascript
+const response = await fetch('https://api.cryptolay.com/api/encrypt', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-API-Key': 'your_api_key'
+  },
+  body: JSON.stringify({
+    manifest_id: 'your_manifest_id',
+    data: {
+      email: 'user@example.com',
+      phone: '+1234567890'
+    }
+  })
+});
+
+const result = await response.json();
+console.log(result.encrypted_data);
+```
+
+## Python Example
+
+```python
+import requests
+
+response = requests.post(
+    'https://api.cryptolay.com/api/encrypt',
+    headers={
+        'Content-Type': 'application/json',
+        'X-API-Key': 'your_api_key'
+    },
+    json={
+        'manifest_id': 'your_manifest_id',
+        'data': {
+            'email': 'user@example.com',
+            'phone': '+1234567890'
+        }
+    }
+)
+
+result = response.json()
+print(result['encrypted_data'])
+```
+
 ## Environment Variables
 
-Create a `.env` file in the `main-api` directory:
-
-```env
-DATABASE_URL=postgresql://postgres:password@localhost:5432/cryptolay
-AWS_REGION=us-east-1
-AWS_ACCESS_KEY_ID=your_key
-AWS_SECRET_ACCESS_KEY=your_secret
-NODE_ENV=development
-```
-
-For local development without AWS KMS, you can use the mock KMS implementation.
-
-## Frontend Applications
-
-### Customer Admin Dashboard
+Store your API key securely using environment variables:
 
 ```bash
-cd customer-admin
-npm install
-npm run dev
+# Development
+export CRYPTOLAY_API_KEY="your_api_key"
+
+# Production
+export CRYPTOLAY_API_KEY="your_production_api_key"
 ```
-
-Access at `http://localhost:3001`
-
-### System Admin Dashboard
-
-```bash
-cd system-admin
-npm install
-npm run dev
-```
-
-Access at `http://localhost:3002`
-
-### Landing Page
-
-```bash
-cd landing-page
-npm install
-npm run dev
-```
-
-Access at `http://localhost:3003`
 
 ## Testing Your Setup
 
-Run the test suite to verify everything is working:
+Test your integration with a simple encryption:
 
 ```bash
-cd main-api
-npm test
+curl -X POST https://api.cryptolay.com/api/encrypt \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{
+    "manifest_id": "YOUR_MANIFEST_ID",
+    "data": {
+      "email": "test@example.com"
+    }
+  }'
 ```
+
+If successful, you should receive a response with encrypted data and metadata.
 
 ## Next Steps
 
@@ -190,7 +176,7 @@ npm test
   </Card>
   <Card
     title="Security Guide"
-    href="/guides/security-best-practices"
+    href="/guides/security"
     icon="shield"
   >
     Learn about security best practices
@@ -199,36 +185,31 @@ npm test
 
 ## Troubleshooting
 
-### Database Connection Issues
+### Invalid API Key
 
-If you can't connect to the database:
+If you get a 401 error:
+1. Check that your API key is correct
+2. Verify the API key hasn't expired
+3. Ensure the API key has the required permissions
 
-```bash
-# Check if PostgreSQL is running
-docker ps
+### Invalid Manifest
 
-# Restart the database
-docker-compose restart postgres
-```
+If you get a 400 error:
+1. Check that the manifest ID is correct
+2. Verify the manifest is active
+3. Ensure the data fields match the manifest
 
-### API Key Issues
+### Rate Limiting
 
-Make sure your API key is valid and has the correct permissions:
-
-```bash
-# Check API key status
-curl -X GET http://localhost:3000/api/customer/api-keys \
-  -H "X-API-Key: YOUR_API_KEY"
-```
-
-### Port Conflicts
-
-If ports are already in use, you can change them in the respective `package.json` files or stop the conflicting services.
+If you get a 429 error:
+1. Check your current usage limits
+2. Implement exponential backoff
+3. Consider upgrading your plan
 
 ## Support
 
 If you run into issues:
 
 - Check the [API Reference](/api-reference/authentication) for detailed endpoint documentation
-- Review the [Security Guide](/guides/security-best-practices) for best practices
+- Review the [Security Guide](/guides/security) for best practices
 - Contact support at support@cryptolay.com

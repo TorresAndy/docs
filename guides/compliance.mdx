@@ -1,0 +1,415 @@
+---
+title: 'Compliance'
+description: 'Learn about CryptoLay compliance with GDPR, HIPAA, PCI-DSS, and other standards'
+---
+
+# Compliance Guide
+
+CryptoLay is designed to help you meet various compliance requirements. This guide covers how to use CryptoLay to achieve compliance with major standards.
+
+## GDPR Compliance
+
+The General Data Protection Regulation (GDPR) requires organizations to protect personal data of EU residents.
+
+### Key Requirements
+
+- **Data Minimization**: Only collect necessary data
+- **Encryption**: Encrypt personal data at rest and in transit
+- **Right to be Forgotten**: Ability to delete personal data
+- **Data Portability**: Export personal data in structured format
+
+### Implementation with CryptoLay
+
+#### Data Minimization
+
+```javascript
+// Only encrypt necessary fields
+const userData = {
+  email: user.email,        // Necessary for account
+  phone: user.phone,        // Necessary for contact
+  // address: user.address, // Not necessary - don't encrypt
+  // preferences: user.preferences // Not necessary - don't encrypt
+};
+
+const encrypted = await cryptolay.encrypt({
+  manifestId: 'gdpr-user-data',
+  data: userData
+});
+```
+
+#### Right to be Forgotten
+
+```javascript
+// Delete encrypted data when user requests deletion
+const deleteUserData = async (userId) => {
+  // Delete from your database
+  await database.deleteUser(userId);
+  
+  // Log deletion for audit trail
+  await auditLog.log('USER_DELETED', {
+    userId,
+    timestamp: new Date(),
+    reason: 'GDPR right to be forgotten'
+  });
+};
+```
+
+#### Data Portability
+
+```javascript
+// Export user data in structured format
+const exportUserData = async (userId) => {
+  const user = await database.getUser(userId);
+  const decrypted = await cryptolay.decrypt({
+    manifestId: 'gdpr-user-data',
+    data: user.encryptedData,
+    meta: user.metadata
+  });
+  
+  return {
+    userId,
+    data: decrypted,
+    exportedAt: new Date(),
+    format: 'JSON'
+  };
+};
+```
+
+## HIPAA Compliance
+
+The Health Insurance Portability and Accountability Act (HIPAA) requires protection of Protected Health Information (PHI).
+
+### Key Requirements
+
+- **Encryption**: Encrypt PHI at rest and in transit
+- **Access Controls**: Limit access to PHI
+- **Audit Trails**: Log all access to PHI
+- **Business Associate Agreements**: Ensure third parties protect PHI
+
+### Implementation with CryptoLay
+
+#### PHI Encryption
+
+```javascript
+// Encrypt all PHI fields
+const encryptPHI = async (patientData) => {
+  return await cryptolay.encrypt({
+    manifestId: 'hipaa-phi-manifest',
+    data: {
+      name: patientData.name,
+      ssn: patientData.ssn,
+      diagnosis: patientData.diagnosis,
+      treatment: patientData.treatment,
+      medications: patientData.medications
+    }
+  });
+};
+```
+
+#### Access Controls
+
+```javascript
+// Implement role-based access
+const canAccessPHI = (user, patientId) => {
+  const userRole = user.role;
+  const patientAccess = user.patientAccess;
+  
+  return (
+    userRole === 'doctor' ||
+    userRole === 'nurse' ||
+    patientAccess.includes(patientId)
+  );
+};
+
+const getPatientData = async (user, patientId) => {
+  if (!canAccessPHI(user, patientId)) {
+    throw new Error('Unauthorized access to PHI');
+  }
+  
+  // Log access for audit trail
+  await auditLog.log('PHI_ACCESS', {
+    userId: user.id,
+    patientId,
+    timestamp: new Date()
+  });
+  
+  return await database.getPatient(patientId);
+};
+```
+
+#### Audit Trails
+
+```javascript
+const auditLog = {
+  async log(event, details) {
+    await database.insert('audit_logs', {
+      event,
+      details,
+      timestamp: new Date(),
+      userId: details.userId || 'system'
+    });
+  }
+};
+```
+
+## PCI-DSS Compliance
+
+The Payment Card Industry Data Security Standard (PCI-DSS) requires protection of payment card data.
+
+### Key Requirements
+
+- **Card Data Encryption**: Encrypt card numbers, CVV, expiry dates
+- **Tokenization**: Replace card data with tokens
+- **Access Controls**: Limit access to card data
+- **Monitoring**: Monitor access to card data
+
+### Implementation with CryptoLay
+
+#### Payment Data Encryption
+
+```javascript
+// Encrypt payment card data
+const encryptPaymentData = async (paymentData) => {
+  return await cryptolay.encrypt({
+    manifestId: 'pci-payment-manifest',
+    data: {
+      cardNumber: paymentData.cardNumber,
+      cvv: paymentData.cvv,
+      expiryDate: paymentData.expiryDate,
+      cardholderName: paymentData.cardholderName
+    }
+  });
+};
+```
+
+#### Tokenization
+
+```javascript
+// Generate token for payment data
+const tokenizePayment = async (paymentData) => {
+  const encrypted = await encryptPaymentData(paymentData);
+  
+  // Generate token
+  const token = generateToken();
+  
+  // Store encrypted data with token
+  await database.storePaymentToken(token, encrypted);
+  
+  return token;
+};
+```
+
+#### Payment Processing
+
+```javascript
+const processPayment = async (token, amount) => {
+  // Retrieve encrypted payment data
+  const encrypted = await database.getPaymentByToken(token);
+  
+  // Decrypt for processing
+  const paymentData = await cryptolay.decrypt({
+    manifestId: 'pci-payment-manifest',
+    data: encrypted.data,
+    meta: encrypted.meta
+  });
+  
+  // Process payment
+  const result = await paymentProcessor.process(paymentData, amount);
+  
+  // Log transaction
+  await auditLog.log('PAYMENT_PROCESSED', {
+    token,
+    amount,
+    timestamp: new Date()
+  });
+  
+  return result;
+};
+```
+
+## SOC 2 Compliance
+
+Service Organization Control 2 (SOC 2) requires controls for security, availability, processing integrity, confidentiality, and privacy.
+
+### Key Requirements
+
+- **Security Controls**: Implement security measures
+- **Availability Monitoring**: Monitor system availability
+- **Data Integrity**: Ensure data accuracy and completeness
+- **Confidentiality**: Protect sensitive data
+
+### Implementation with CryptoLay
+
+#### Security Controls
+
+```javascript
+// Implement comprehensive security logging
+const securityLogger = {
+  logEncryption(userId, manifestId, dataSize) {
+    return auditLog.log('DATA_ENCRYPTED', {
+      userId,
+      manifestId,
+      dataSize,
+      timestamp: new Date()
+    });
+  },
+  
+  logDecryption(userId, manifestId, dataSize) {
+    return auditLog.log('DATA_DECRYPTED', {
+      userId,
+      manifestId,
+      dataSize,
+      timestamp: new Date()
+    });
+  },
+  
+  logAccess(userId, resource, action) {
+    return auditLog.log('RESOURCE_ACCESS', {
+      userId,
+      resource,
+      action,
+      timestamp: new Date()
+    });
+  }
+};
+```
+
+#### Availability Monitoring
+
+```javascript
+const availabilityMonitor = {
+  async checkServiceHealth() {
+    try {
+      const response = await fetch('https://api.cryptolay.com/health');
+      return response.ok;
+    } catch (error) {
+      console.error('Service unavailable:', error);
+      return false;
+    }
+  },
+  
+  async logAvailability(status) {
+    await auditLog.log('AVAILABILITY_CHECK', {
+      status,
+      timestamp: new Date()
+    });
+  }
+};
+```
+
+## LGPD Compliance
+
+The Lei Geral de Proteção de Dados (LGPD) is Brazil's data protection law.
+
+### Key Requirements
+
+- **Legal Basis**: Have legal basis for data processing
+- **Data Subject Rights**: Respect data subject rights
+- **Data Protection Officer**: Appoint DPO if required
+- **Incident Reporting**: Report data breaches
+
+### Implementation with CryptoLay
+
+#### Legal Basis Tracking
+
+```javascript
+const legalBasisTracker = {
+  async trackProcessing(userId, purpose, legalBasis) {
+    await database.insert('data_processing_logs', {
+      userId,
+      purpose,
+      legalBasis,
+      timestamp: new Date()
+    });
+  },
+  
+  async getProcessingHistory(userId) {
+    return await database.query(
+      'SELECT * FROM data_processing_logs WHERE userId = ?',
+      [userId]
+    );
+  }
+};
+```
+
+#### Data Subject Rights
+
+```javascript
+const dataSubjectRights = {
+  async getData(userId) {
+    const user = await database.getUser(userId);
+    const decrypted = await cryptolay.decrypt({
+      manifestId: 'lgpd-user-data',
+      data: user.encryptedData,
+      meta: user.metadata
+    });
+    
+    return {
+      userId,
+      data: decrypted,
+      processingHistory: await legalBasisTracker.getProcessingHistory(userId)
+    };
+  },
+  
+  async deleteData(userId) {
+    await database.deleteUser(userId);
+    await auditLog.log('LGPD_DELETION', {
+      userId,
+      timestamp: new Date()
+    });
+  }
+};
+```
+
+## Compliance Checklist
+
+### GDPR
+- [ ] Data minimization implemented
+- [ ] Right to be forgotten supported
+- [ ] Data portability enabled
+- [ ] Consent management in place
+- [ ] Privacy policy updated
+
+### HIPAA
+- [ ] PHI encryption implemented
+- [ ] Access controls configured
+- [ ] Audit trails enabled
+- [ ] Business associate agreements signed
+- [ ] Security training completed
+
+### PCI-DSS
+- [ ] Card data encryption implemented
+- [ ] Tokenization system in place
+- [ ] Access controls configured
+- [ ] Monitoring systems active
+- [ ] Regular security assessments
+
+### SOC 2
+- [ ] Security controls implemented
+- [ ] Availability monitoring active
+- [ ] Data integrity measures in place
+- [ ] Confidentiality controls configured
+- [ ] Regular audits scheduled
+
+### LGPD
+- [ ] Legal basis tracking implemented
+- [ ] Data subject rights supported
+- [ ] DPO appointed (if required)
+- [ ] Incident response plan ready
+- [ ] Privacy impact assessments completed
+
+## Best Practices
+
+1. **Regular Audits**: Conduct regular compliance audits
+2. **Documentation**: Maintain detailed documentation
+3. **Training**: Provide regular compliance training
+4. **Monitoring**: Implement continuous monitoring
+5. **Incident Response**: Have incident response plans ready
+
+## Resources
+
+- [Security Best Practices](/guides/security-best-practices) - Security implementation guide
+- [API Reference](/api-reference/authentication) - Complete API documentation
+- [GDPR Guide](https://gdpr.eu/) - Official GDPR information
+- [HIPAA Guide](https://www.hhs.gov/hipaa/) - Official HIPAA information
+- [PCI-DSS Guide](https://www.pcisecuritystandards.org/) - Official PCI-DSS information 

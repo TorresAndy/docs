@@ -1,0 +1,378 @@
+---
+title: 'Customers'
+description: 'Manage your CryptoLay customer account and settings'
+---
+
+# Customers API
+
+The Customers API allows you to manage your CryptoLay account, view usage statistics, and update account settings.
+
+## Get Account Information
+
+Retrieve your account details and current usage.
+
+<RequestExample>
+```bash
+curl -X GET https://api.cryptolay.com/api/customer/account \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "id": "customer-uuid-123",
+  "email": "user@example.com",
+  "company": "Example Corp",
+  "plan": "pro",
+  "status": "active",
+  "created_at": "2024-01-01T00:00:00Z",
+  "usage": {
+    "encryptions_this_month": 15000,
+    "encryptions_limit": 100000,
+    "storage_used_gb": 2.5,
+    "storage_limit_gb": 50
+  },
+  "settings": {
+    "webhook_url": "https://your-app.com/webhooks/cryptolay",
+    "notifications_enabled": true,
+    "timezone": "UTC"
+  }
+}
+```
+</ResponseExample>
+
+### Response Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Unique customer identifier |
+| `email` | string | Account email address |
+| `company` | string | Company name |
+| `plan` | string | Current plan (free/pro/enterprise) |
+| `status` | string | Account status (active/suspended) |
+| `created_at` | string | ISO 8601 timestamp |
+| `usage` | object | Current usage statistics |
+| `settings` | object | Account settings |
+
+## Update Account Settings
+
+Update your account settings and preferences.
+
+<RequestExample>
+```bash
+curl -X PUT https://api.cryptolay.com/api/customer/account \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{
+    "company": "Updated Company Name",
+    "settings": {
+      "webhook_url": "https://new-webhook.com/cryptolay",
+      "notifications_enabled": false,
+      "timezone": "America/New_York"
+    }
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "id": "customer-uuid-123",
+  "email": "user@example.com",
+  "company": "Updated Company Name",
+  "plan": "pro",
+  "status": "active",
+  "created_at": "2024-01-01T00:00:00Z",
+  "settings": {
+    "webhook_url": "https://new-webhook.com/cryptolay",
+    "notifications_enabled": false,
+    "timezone": "America/New_York"
+  }
+}
+```
+</ResponseExample>
+
+### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `company` | string | No | Company name |
+| `settings` | object | No | Account settings |
+
+### Settings Object
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `webhook_url` | string | Webhook URL for notifications |
+| `notifications_enabled` | boolean | Enable/disable email notifications |
+| `timezone` | string | Account timezone |
+
+## Get Usage Statistics
+
+Retrieve detailed usage statistics for your account.
+
+<RequestExample>
+```bash
+curl -X GET "https://api.cryptolay.com/api/customer/usage?period=month" \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "period": "month",
+  "start_date": "2024-01-01T00:00:00Z",
+  "end_date": "2024-01-31T23:59:59Z",
+  "statistics": {
+    "total_encryptions": 15000,
+    "total_decryptions": 12000,
+    "total_requests": 27000,
+    "average_response_time_ms": 45,
+    "error_rate_percent": 0.1
+  },
+  "daily_breakdown": [
+    {
+      "date": "2024-01-01",
+      "encryptions": 500,
+      "decryptions": 400,
+      "errors": 1
+    }
+  ],
+  "manifest_usage": [
+    {
+      "manifest_id": "manifest-uuid-123",
+      "manifest_name": "User Data Manifest",
+      "encryptions": 8000,
+      "decryptions": 6000
+    }
+  ]
+}
+```
+</ResponseExample>
+
+### Query Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `period` | string | month | Time period (day/week/month/year) |
+| `start_date` | string | - | Start date (ISO 8601) |
+| `end_date` | string | - | End date (ISO 8601) |
+
+## Get API Keys
+
+List all API keys for your account.
+
+<RequestExample>
+```bash
+curl -X GET https://api.cryptolay.com/api/customer/api-keys \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "api_keys": [
+    {
+      "id": "key-uuid-123",
+      "name": "Production API Key",
+      "prefix": "sk_live_",
+      "permissions": ["encrypt", "decrypt"],
+      "status": "active",
+      "created_at": "2024-01-01T00:00:00Z",
+      "last_used": "2024-01-15T10:30:00Z"
+    }
+  ],
+  "total": 1
+}
+```
+</ResponseExample>
+
+## Create API Key
+
+Create a new API key for your account.
+
+<RequestExample>
+```bash
+curl -X POST https://api.cryptolay.com/api/customer/api-keys \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{
+    "name": "New API Key",
+    "permissions": ["encrypt", "decrypt"]
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "id": "key-uuid-456",
+  "name": "New API Key",
+  "key": "sk_live_1234567890abcdef",
+  "permissions": ["encrypt", "decrypt"],
+  "status": "active",
+  "created_at": "2024-01-15T12:00:00Z"
+}
+```
+</ResponseExample>
+
+### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | Yes | Descriptive name for the API key |
+| `permissions` | array | Yes | Array of permissions (encrypt/decrypt) |
+
+## Delete API Key
+
+Delete an API key. This action cannot be undone.
+
+<RequestExample>
+```bash
+curl -X DELETE https://api.cryptolay.com/api/customer/api-keys/key-uuid-123 \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "message": "API key deleted successfully"
+}
+```
+</ResponseExample>
+
+## Error Responses
+
+### 400 Bad Request
+
+```json
+{
+  "error": "Invalid settings",
+  "details": {
+    "webhook_url": "Invalid URL format"
+  }
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "error": "Invalid API key"
+}
+```
+
+### 403 Forbidden
+
+```json
+{
+  "error": "Insufficient permissions"
+}
+```
+
+### 429 Too Many Requests
+
+```json
+{
+  "error": "Rate limit exceeded",
+  "retry_after": 60
+}
+```
+
+## Examples
+
+### JavaScript
+
+```javascript
+// Get account information
+const getAccount = async () => {
+  const response = await fetch('https://api.cryptolay.com/api/customer/account', {
+    headers: {
+      'X-API-Key': 'your_api_key'
+    }
+  });
+  
+  return response.json();
+};
+
+// Update account settings
+const updateAccount = async (settings) => {
+  const response = await fetch('https://api.cryptolay.com/api/customer/account', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-Key': 'your_api_key'
+    },
+    body: JSON.stringify(settings)
+  });
+  
+  return response.json();
+};
+
+// Get usage statistics
+const getUsage = async (period = 'month') => {
+  const response = await fetch(
+    `https://api.cryptolay.com/api/customer/usage?period=${period}`,
+    {
+      headers: {
+        'X-API-Key': 'your_api_key'
+      }
+    }
+  );
+  
+  return response.json();
+};
+```
+
+### Python
+
+```python
+import requests
+
+# Get account information
+def get_account():
+    response = requests.get(
+        'https://api.cryptolay.com/api/customer/account',
+        headers={'X-API-Key': 'your_api_key'}
+    )
+    return response.json()
+
+# Update account settings
+def update_account(settings):
+    response = requests.put(
+        'https://api.cryptolay.com/api/customer/account',
+        headers={
+            'Content-Type': 'application/json',
+            'X-API-Key': 'your_api_key'
+        },
+        json=settings
+    )
+    return response.json()
+
+# Get usage statistics
+def get_usage(period='month'):
+    response = requests.get(
+        f'https://api.cryptolay.com/api/customer/usage?period={period}',
+        headers={'X-API-Key': 'your_api_key'}
+    )
+    return response.json()
+```
+
+## Best Practices
+
+1. **Monitor Usage**: Regularly check usage statistics to avoid limits
+2. **Secure API Keys**: Store API keys securely and rotate them regularly
+3. **Set Webhooks**: Configure webhooks for real-time notifications
+4. **Review Permissions**: Only grant necessary permissions to API keys
+5. **Backup Settings**: Keep backups of important account settings
+
+## Security Notes
+
+- API keys are sensitive and should be stored securely
+- Deleted API keys cannot be recovered
+- Usage statistics may be delayed by up to 5 minutes
+- Webhook URLs must use HTTPS 

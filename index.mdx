@@ -51,70 +51,63 @@ CryptoLay provides a secure, scalable encryption service that allows you to encr
   </Card>
 </CardGroup>
 
-## Architecture
+## How It Works
 
-The CryptoLay platform consists of four main applications:
+### 1. Create a Manifest
 
-- **Main API** (Node.js Lambda) - Core encryption/decryption service
-- **Customer Admin** (Next.js) - Customer dashboard for managing encryption manifests
-- **System Admin** (Next.js) - Administrative interface for system management  
-- **Landing Page** (Next.js) - Public marketing and signup page
+Define which fields should be encrypted in your data:
 
-## Getting Started
+```json
+{
+  "name": "User Data Manifest",
+  "fields": ["email", "phone", "ssn"],
+  "description": "Encrypts sensitive user information"
+}
+```
 
-### Prerequisites
+### 2. Encrypt Your Data
 
-- Node.js 18+
-- Docker & Docker Compose
-- PostgreSQL
-- AWS Account (for KMS and Lambda deployment)
+Send your data to CryptoLay for encryption:
 
-### Quick Setup
+```javascript
+const response = await fetch('https://api.cryptolay.com/api/encrypt', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-API-Key': 'your_api_key'
+  },
+  body: JSON.stringify({
+    manifest_id: 'manifest-uuid',
+    data: {
+      email: 'user@example.com',
+      phone: '+1234567890'
+    }
+  })
+});
+```
 
-1. **Start the database:**
-   ```bash
-   docker-compose up postgres -d
-   ```
+### 3. Store Encrypted Data
 
-2. **Apply database schema:**
-   ```bash
-   psql -h localhost -U postgres -d cryptolay -f database/schema.sql
-   ```
+Store the encrypted data and metadata securely in your database.
 
-3. **Start the main API:**
-   ```bash
-   cd main-api
-   npm install
-   npm run dev
-   ```
+### 4. Decrypt When Needed
 
-4. **Start frontend applications:**
-   ```bash
-   # Customer Admin
-   cd customer-admin
-   npm install
-   npm run dev
+Retrieve and decrypt data when required:
 
-   # System Admin  
-   cd system-admin
-   npm install
-   npm run dev
-
-   # Landing Page
-   cd landing-page
-   npm install
-   npm run dev
-   ```
-
-## Services Overview
-
-| Service | Port | Description |
-|---------|------|-------------|
-| Main API | 3000 | Encryption/decryption API |
-| Customer Admin | 3001 | Customer dashboard |
-| System Admin | 3002 | Admin interface |
-| Landing Page | 3003 | Public website |
-| PostgreSQL | 5432 | Database |
+```javascript
+const decrypted = await fetch('https://api.cryptolay.com/api/decrypt', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-API-Key': 'your_api_key'
+  },
+  body: JSON.stringify({
+    manifest_id: 'manifest-uuid',
+    data: encryptedData,
+    meta: metadata
+  })
+});
+```
 
 ## Security Features
 
@@ -124,21 +117,107 @@ The CryptoLay platform consists of four main applications:
 - **Rate Limiting** - Prevents abuse
 - **Request Logging** - Comprehensive audit trail
 
+## Use Cases
+
+### Healthcare (HIPAA Compliance)
+
+Encrypt patient data to meet HIPAA requirements:
+
+```javascript
+// Encrypt patient information
+const patientData = {
+  name: "John Doe",
+  ssn: "123-45-6789",
+  diagnosis: "Hypertension"
+};
+
+const encrypted = await cryptolay.encrypt({
+  manifestId: 'patient-data-manifest',
+  data: patientData
+});
+```
+
+### Financial Services (PCI-DSS)
+
+Secure payment information:
+
+```javascript
+// Encrypt payment data
+const paymentData = {
+  cardNumber: "4111-1111-1111-1111",
+  cvv: "123",
+  expiryDate: "12/25"
+};
+
+const encrypted = await cryptolay.encrypt({
+  manifestId: 'payment-data-manifest',
+  data: paymentData
+});
+```
+
+### E-commerce (GDPR Compliance)
+
+Protect customer personal data:
+
+```javascript
+// Encrypt customer information
+const customerData = {
+  email: "customer@example.com",
+  address: "123 Main St",
+  phone: "+1234567890"
+};
+
+const encrypted = await cryptolay.encrypt({
+  manifestId: 'customer-data-manifest',
+  data: customerData
+});
+```
+
+## Pricing
+
+### Free Tier
+- 5,000 encryptions/month
+- Basic encryption/decryption
+- Community support
+- 5GB encrypted storage
+
+### Pro Tier
+- 100,000 encryptions/month
+- Advanced key management
+- Priority support
+- 50GB encrypted storage
+- Custom integrations
+
+### Enterprise
+- Unlimited encryptions
+- HIPAA & SOC 2 compliance
+- Dedicated support
+- Custom SLA
+- Advanced security features
+
 ## Next Steps
 
 <CardGroup cols={2}>
   <Card
-    title="Authentication"
-    href="/guides/api-keys"
-    icon="key"
+    title="Quick Start"
+    href="/quickstart"
+    icon="rocket"
   >
-    Learn about API keys and authentication
+    Get started in 5 minutes
   </Card>
   <Card
-    title="Encryption"
-    href="/api-reference/encryption"
-    icon="lock"
+    title="API Reference"
+    href="/api-reference/authentication"
+    icon="code"
   >
-    Start encrypting your data
+    Explore the complete API
   </Card>
 </CardGroup>
+
+## Support
+
+Need help getting started?
+
+- **Documentation**: [docs.cryptolay.com](https://docs.cryptolay.com)
+- **Email**: support@cryptolay.com
+- **GitHub**: [github.com/TorresAndy/cryptolay](https://github.com/TorresAndy/cryptolay)

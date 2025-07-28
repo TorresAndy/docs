@@ -1,0 +1,512 @@
+---
+title: 'Billing'
+description: 'Manage your CryptoLay subscription and billing information'
+---
+
+# Billing API
+
+The Billing API allows you to manage your subscription, view invoices, and update billing information.
+
+## Get Subscription
+
+Retrieve your current subscription details.
+
+<RequestExample>
+```bash
+curl -X GET https://api.cryptolay.com/api/customer/billing/subscription \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "id": "sub-uuid-123",
+  "plan": "pro",
+  "status": "active",
+  "current_period_start": "2024-01-01T00:00:00Z",
+  "current_period_end": "2024-02-01T00:00:00Z",
+  "cancel_at_period_end": false,
+  "features": {
+    "encryptions_per_month": 100000,
+    "storage_gb": 50,
+    "support_level": "priority",
+    "custom_integrations": true
+  },
+  "pricing": {
+    "amount": 99.00,
+    "currency": "usd",
+    "interval": "month"
+  }
+}
+```
+</ResponseExample>
+
+### Response Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Unique subscription identifier |
+| `plan` | string | Current plan (free/pro/enterprise) |
+| `status` | string | Subscription status (active/past_due/canceled) |
+| `current_period_start` | string | ISO 8601 timestamp |
+| `current_period_end` | string | ISO 8601 timestamp |
+| `cancel_at_period_end` | boolean | Whether subscription will cancel at period end |
+| `features` | object | Plan features and limits |
+| `pricing` | object | Pricing information |
+
+## Update Subscription
+
+Change your subscription plan.
+
+<RequestExample>
+```bash
+curl -X PUT https://api.cryptolay.com/api/customer/billing/subscription \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{
+    "plan": "enterprise",
+    "payment_method_id": "pm_1234567890"
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "id": "sub-uuid-123",
+  "plan": "enterprise",
+  "status": "active",
+  "current_period_start": "2024-01-01T00:00:00Z",
+  "current_period_end": "2024-02-01T00:00:00Z",
+  "cancel_at_period_end": false,
+  "features": {
+    "encryptions_per_month": 1000000,
+    "storage_gb": 500,
+    "support_level": "dedicated",
+    "custom_integrations": true
+  },
+  "pricing": {
+    "amount": 499.00,
+    "currency": "usd",
+    "interval": "month"
+  }
+}
+```
+</ResponseExample>
+
+### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `plan` | string | Yes | New plan (free/pro/enterprise) |
+| `payment_method_id` | string | No | Payment method ID for new plan |
+
+## Cancel Subscription
+
+Cancel your subscription at the end of the current billing period.
+
+<RequestExample>
+```bash
+curl -X POST https://api.cryptolay.com/api/customer/billing/subscription/cancel \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "id": "sub-uuid-123",
+  "plan": "pro",
+  "status": "active",
+  "cancel_at_period_end": true,
+  "canceled_at": "2024-01-15T12:00:00Z"
+}
+```
+</ResponseExample>
+
+## Reactivate Subscription
+
+Reactivate a canceled subscription.
+
+<RequestExample>
+```bash
+curl -X POST https://api.cryptolay.com/api/customer/billing/subscription/reactivate \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "id": "sub-uuid-123",
+  "plan": "pro",
+  "status": "active",
+  "cancel_at_period_end": false,
+  "canceled_at": null
+}
+```
+</ResponseExample>
+
+## Get Invoices
+
+Retrieve your billing invoices.
+
+<RequestExample>
+```bash
+curl -X GET "https://api.cryptolay.com/api/customer/billing/invoices?limit=10" \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "invoices": [
+    {
+      "id": "inv-uuid-123",
+      "number": "INV-2024-001",
+      "amount": 99.00,
+      "currency": "usd",
+      "status": "paid",
+      "created_at": "2024-01-01T00:00:00Z",
+      "due_date": "2024-01-31T00:00:00Z",
+      "pdf_url": "https://api.cryptolay.com/invoices/inv-uuid-123.pdf"
+    }
+  ],
+  "total": 1,
+  "has_more": false
+}
+```
+</ResponseExample>
+
+### Query Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `limit` | integer | 10 | Number of invoices to return |
+| `starting_after` | string | - | Invoice ID to start after |
+| `status` | string | all | Filter by status (paid/pending/void) |
+
+## Get Invoice
+
+Retrieve a specific invoice by ID.
+
+<RequestExample>
+```bash
+curl -X GET https://api.cryptolay.com/api/customer/billing/invoices/inv-uuid-123 \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "id": "inv-uuid-123",
+  "number": "INV-2024-001",
+  "amount": 99.00,
+  "currency": "usd",
+  "status": "paid",
+  "created_at": "2024-01-01T00:00:00Z",
+  "due_date": "2024-01-31T00:00:00Z",
+  "paid_at": "2024-01-01T10:30:00Z",
+  "pdf_url": "https://api.cryptolay.com/invoices/inv-uuid-123.pdf",
+  "line_items": [
+    {
+      "description": "Pro Plan - January 2024",
+      "amount": 99.00,
+      "quantity": 1
+    }
+  ]
+}
+```
+</ResponseExample>
+
+## Get Payment Methods
+
+List your saved payment methods.
+
+<RequestExample>
+```bash
+curl -X GET https://api.cryptolay.com/api/customer/billing/payment-methods \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "payment_methods": [
+    {
+      "id": "pm-uuid-123",
+      "type": "card",
+      "card": {
+        "brand": "visa",
+        "last4": "4242",
+        "exp_month": 12,
+        "exp_year": 2025
+      },
+      "is_default": true
+    }
+  ]
+}
+```
+</ResponseExample>
+
+## Add Payment Method
+
+Add a new payment method to your account.
+
+<RequestExample>
+```bash
+curl -X POST https://api.cryptolay.com/api/customer/billing/payment-methods \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{
+    "type": "card",
+    "card": {
+      "token": "tok_visa"
+    }
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "id": "pm-uuid-456",
+  "type": "card",
+  "card": {
+    "brand": "visa",
+    "last4": "4242",
+    "exp_month": 12,
+    "exp_year": 2025
+  },
+  "is_default": false
+}
+```
+</ResponseExample>
+
+### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `type` | string | Yes | Payment method type (card/bank_account) |
+| `card.token` | string | No | Card token from payment processor |
+| `bank_account.token` | string | No | Bank account token from payment processor |
+
+## Set Default Payment Method
+
+Set a payment method as the default for future charges.
+
+<RequestExample>
+```bash
+curl -X POST https://api.cryptolay.com/api/customer/billing/payment-methods/pm-uuid-123/default \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "message": "Payment method set as default"
+}
+```
+</ResponseExample>
+
+## Delete Payment Method
+
+Remove a payment method from your account.
+
+<RequestExample>
+```bash
+curl -X DELETE https://api.cryptolay.com/api/customer/billing/payment-methods/pm-uuid-123 \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "message": "Payment method deleted successfully"
+}
+```
+</ResponseExample>
+
+## Get Usage-Based Billing
+
+Retrieve usage-based billing information for the current period.
+
+<RequestExample>
+```bash
+curl -X GET https://api.cryptolay.com/api/customer/billing/usage \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "period": {
+    "start": "2024-01-01T00:00:00Z",
+    "end": "2024-01-31T23:59:59Z"
+  },
+  "usage": {
+    "encryptions": {
+      "used": 75000,
+      "included": 100000,
+      "overage": 0,
+      "rate": 0.001
+    },
+    "storage": {
+      "used_gb": 25.5,
+      "included_gb": 50,
+      "overage_gb": 0,
+      "rate_per_gb": 0.10
+    }
+  },
+  "estimated_cost": 99.00,
+  "currency": "usd"
+}
+```
+</ResponseExample>
+
+## Error Responses
+
+### 400 Bad Request
+
+```json
+{
+  "error": "Invalid plan",
+  "details": {
+    "plan": "Plan 'invalid' is not available"
+  }
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "error": "Invalid API key"
+}
+```
+
+### 402 Payment Required
+
+```json
+{
+  "error": "Payment method required",
+  "details": {
+    "payment_method_id": "Payment method is required for this plan"
+  }
+}
+```
+
+### 403 Forbidden
+
+```json
+{
+  "error": "Insufficient permissions"
+}
+```
+
+## Examples
+
+### JavaScript
+
+```javascript
+// Get subscription details
+const getSubscription = async () => {
+  const response = await fetch('https://api.cryptolay.com/api/customer/billing/subscription', {
+    headers: {
+      'X-API-Key': 'your_api_key'
+    }
+  });
+  
+  return response.json();
+};
+
+// Upgrade subscription
+const upgradeSubscription = async (plan, paymentMethodId) => {
+  const response = await fetch('https://api.cryptolay.com/api/customer/billing/subscription', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-Key': 'your_api_key'
+    },
+    body: JSON.stringify({
+      plan,
+      payment_method_id: paymentMethodId
+    })
+  });
+  
+  return response.json();
+};
+
+// Get invoices
+const getInvoices = async (limit = 10) => {
+  const response = await fetch(
+    `https://api.cryptolay.com/api/customer/billing/invoices?limit=${limit}`,
+    {
+      headers: {
+        'X-API-Key': 'your_api_key'
+      }
+    }
+  );
+  
+  return response.json();
+};
+```
+
+### Python
+
+```python
+import requests
+
+# Get subscription details
+def get_subscription():
+    response = requests.get(
+        'https://api.cryptolay.com/api/customer/billing/subscription',
+        headers={'X-API-Key': 'your_api_key'}
+    )
+    return response.json()
+
+# Upgrade subscription
+def upgrade_subscription(plan, payment_method_id):
+    response = requests.put(
+        'https://api.cryptolay.com/api/customer/billing/subscription',
+        headers={
+            'Content-Type': 'application/json',
+            'X-API-Key': 'your_api_key'
+        },
+        json={
+            'plan': plan,
+            'payment_method_id': payment_method_id
+        }
+    )
+    return response.json()
+
+# Get invoices
+def get_invoices(limit=10):
+    response = requests.get(
+        f'https://api.cryptolay.com/api/customer/billing/invoices?limit={limit}',
+        headers={'X-API-Key': 'your_api_key'}
+    )
+    return response.json()
+```
+
+## Best Practices
+
+1. **Monitor Usage**: Check usage regularly to avoid overage charges
+2. **Plan Ahead**: Upgrade before hitting limits to avoid service interruption
+3. **Keep Payment Methods Updated**: Ensure payment methods are current
+4. **Review Invoices**: Regularly review invoices for accuracy
+5. **Understand Billing**: Know your plan limits and overage rates
+
+## Security Notes
+
+- Payment method tokens should be obtained securely
+- Never store payment method details directly
+- Use HTTPS for all billing API calls
+- Monitor billing activity for suspicious charges 
