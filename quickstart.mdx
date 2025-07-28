@@ -17,7 +17,7 @@ Before you begin, make sure you have:
 
 ## Step 1: Create Your Account
 
-1. Visit [cryptolay.com](https://cryptolay.com)
+1. Visit [cryptolay.com.br](https://cryptolay.com.br)
 2. Click **Get Started** or **Sign Up**
 3. Fill in your details and create your account
 4. Verify your email address
@@ -101,7 +101,7 @@ Example manifest structure:
 Now you can encrypt sensitive data using your manifest:
 
 ```bash
-curl -X POST https://api.cryptolay.com/api/encrypt \
+curl -X POST https://api.cryptolay.com.br/api/encrypt \
   -H "Content-Type: application/json" \
   -H "X-API-Key: YOUR_API_KEY" \
   -d '{
@@ -121,7 +121,7 @@ curl -X POST https://api.cryptolay.com/api/encrypt \
 To decrypt the data, you'll need the encrypted response and metadata:
 
 ```bash
-curl -X POST https://api.cryptolay.com/api/decrypt \
+curl -X POST https://api.cryptolay.com.br/api/decrypt \
   -H "Content-Type: application/json" \
   -H "X-API-Key: YOUR_API_KEY" \
   -d '{
@@ -146,7 +146,7 @@ curl -X POST https://api.cryptolay.com/api/decrypt \
 ## JavaScript Example
 
 ```javascript
-const response = await fetch('https://api.cryptolay.com/api/encrypt', {
+const response = await fetch('https://api.cryptolay.com.br/api/encrypt', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -173,7 +173,7 @@ console.log(result.encrypted_data);
 import requests
 
 response = requests.post(
-    'https://api.cryptolay.com/api/encrypt',
+    'https://api.cryptolay.com.br/api/encrypt',
     headers={
         'Content-Type': 'application/json',
         'X-API-Key': 'your_api_key'
@@ -210,7 +210,7 @@ export CRYPTOLAY_API_KEY="your_production_api_key"
 Test your integration with a simple encryption:
 
 ```bash
-curl -X POST https://api.cryptolay.com/api/encrypt \
+curl -X POST https://api.cryptolay.com.br/api/encrypt \
   -H "Content-Type: application/json" \
   -H "X-API-Key: YOUR_API_KEY" \
   -d '{
@@ -274,4 +274,4 @@ If you run into issues:
 
 - Check the [API Reference](/api-reference/authentication) for detailed endpoint documentation
 - Review the [Security Guide](/guides/security) for best practices
-- Contact support at support@cryptolay.com
+- Contact support at support@cryptolay.com.br

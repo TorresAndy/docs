@@ -13,7 +13,7 @@ Retrieve your current subscription details.
 
 <RequestExample>
 ```bash
-curl -X GET https://api.cryptolay.com/api/customer/billing/subscription \
+curl -X GET https://api.cryptolay.com.br/api/customer/billing/subscription \
   -H "X-API-Key: YOUR_API_KEY"
 ```
 </RequestExample>
@@ -61,7 +61,7 @@ Change your subscription plan.
 
 <RequestExample>
 ```bash
-curl -X PUT https://api.cryptolay.com/api/customer/billing/subscription \
+curl -X PUT https://api.cryptolay.com.br/api/customer/billing/subscription \
   -H "Content-Type: application/json" \
   -H "X-API-Key: YOUR_API_KEY" \
   -d '{
@@ -108,7 +108,7 @@ Cancel your subscription at the end of the current billing period.
 
 <RequestExample>
 ```bash
-curl -X POST https://api.cryptolay.com/api/customer/billing/subscription/cancel \
+curl -X POST https://api.cryptolay.com.br/api/customer/billing/subscription/cancel \
   -H "X-API-Key: YOUR_API_KEY"
 ```
 </RequestExample>
@@ -131,7 +131,7 @@ Reactivate a canceled subscription.
 
 <RequestExample>
 ```bash
-curl -X POST https://api.cryptolay.com/api/customer/billing/subscription/reactivate \
+curl -X POST https://api.cryptolay.com.br/api/customer/billing/subscription/reactivate \
   -H "X-API-Key: YOUR_API_KEY"
 ```
 </RequestExample>
@@ -154,7 +154,7 @@ Retrieve your billing invoices.
 
 <RequestExample>
 ```bash
-curl -X GET "https://api.cryptolay.com/api/customer/billing/invoices?limit=10" \
+curl -X GET "https://api.cryptolay.com.br/api/customer/billing/invoices?limit=10" \
   -H "X-API-Key: YOUR_API_KEY"
 ```
 </RequestExample>
@@ -171,7 +171,7 @@ curl -X GET "https://api.cryptolay.com/api/customer/billing/invoices?limit=10" \
       "status": "paid",
       "created_at": "2024-01-01T00:00:00Z",
       "due_date": "2024-01-31T00:00:00Z",
-      "pdf_url": "https://api.cryptolay.com/invoices/inv-uuid-123.pdf"
+      "pdf_url": "https://api.cryptolay.com.br/invoices/inv-uuid-123.pdf"
     }
   ],
   "total": 1,
@@ -194,7 +194,7 @@ Retrieve a specific invoice by ID.
 
 <RequestExample>
 ```bash
-curl -X GET https://api.cryptolay.com/api/customer/billing/invoices/inv-uuid-123 \
+curl -X GET https://api.cryptolay.com.br/api/customer/billing/invoices/inv-uuid-123 \
   -H "X-API-Key: YOUR_API_KEY"
 ```
 </RequestExample>
@@ -210,7 +210,7 @@ curl -X GET https://api.cryptolay.com/api/customer/billing/invoices/inv-uuid-123
   "created_at": "2024-01-01T00:00:00Z",
   "due_date": "2024-01-31T00:00:00Z",
   "paid_at": "2024-01-01T10:30:00Z",
-  "pdf_url": "https://api.cryptolay.com/invoices/inv-uuid-123.pdf",
+  "pdf_url": "https://api.cryptolay.com.br/invoices/inv-uuid-123.pdf",
   "line_items": [
     {
       "description": "Pro Plan - January 2024",
@@ -228,7 +228,7 @@ List your saved payment methods.
 
 <RequestExample>
 ```bash
-curl -X GET https://api.cryptolay.com/api/customer/billing/payment-methods \
+curl -X GET https://api.cryptolay.com.br/api/customer/billing/payment-methods \
   -H "X-API-Key: YOUR_API_KEY"
 ```
 </RequestExample>
@@ -259,7 +259,7 @@ Add a new payment method to your account.
 
 <RequestExample>
 ```bash
-curl -X POST https://api.cryptolay.com/api/customer/billing/payment-methods \
+curl -X POST https://api.cryptolay.com.br/api/customer/billing/payment-methods \
   -H "Content-Type: application/json" \
   -H "X-API-Key: YOUR_API_KEY" \
   -d '{
@@ -301,7 +301,7 @@ Set a payment method as the default for future charges.
 
 <RequestExample>
 ```bash
-curl -X POST https://api.cryptolay.com/api/customer/billing/payment-methods/pm-uuid-123/default \
+curl -X POST https://api.cryptolay.com.br/api/customer/billing/payment-methods/pm-uuid-123/default \
   -H "X-API-Key: YOUR_API_KEY"
 ```
 </RequestExample>
@@ -320,7 +320,7 @@ Remove a payment method from your account.
 
 <RequestExample>
 ```bash
-curl -X DELETE https://api.cryptolay.com/api/customer/billing/payment-methods/pm-uuid-123 \
+curl -X DELETE https://api.cryptolay.com.br/api/customer/billing/payment-methods/pm-uuid-123 \
   -H "X-API-Key: YOUR_API_KEY"
 ```
 </RequestExample>
@@ -339,7 +339,7 @@ Retrieve usage-based billing information for the current period.
 
 <RequestExample>
 ```bash
-curl -X GET https://api.cryptolay.com/api/customer/billing/usage \
+curl -X GET https://api.cryptolay.com.br/api/customer/billing/usage \
   -H "X-API-Key: YOUR_API_KEY"
 ```
 </RequestExample>

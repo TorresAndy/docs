@@ -16,7 +16,7 @@ API keys are the primary method of authentication for the CryptoLay API. Each AP
 <RequestExample>
 
 ```bash
-curl -X POST https://api.cryptolay.com/api/customer/api-keys \
+curl -X POST https://api.cryptolay.com.br/api/customer/api-keys \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{
@@ -50,7 +50,7 @@ curl -X POST https://api.cryptolay.com/api/customer/api-keys \
 Include your API key in the `X-API-Key` header with every request:
 
 ```bash
-curl -X POST https://api.cryptolay.com/api/encrypt \
+curl -X POST https://api.cryptolay.com.br/api/encrypt \
   -H "Content-Type: application/json" \
   -H "X-API-Key: cl_live_1234567890abcdef1234567890abcdef" \
   -d '{
@@ -78,7 +78,7 @@ curl -X POST https://api.cryptolay.com/api/encrypt \
 <RequestExample>
 
 ```bash
-curl -X GET https://api.cryptolay.com/api/customer/api-keys \
+curl -X GET https://api.cryptolay.com.br/api/customer/api-keys \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -89,7 +89,7 @@ curl -X GET https://api.cryptolay.com/api/customer/api-keys \
 <RequestExample>
 
 ```bash
-curl -X DELETE https://api.cryptolay.com/api/customer/api-keys/ak_1234567890abcdef \
+curl -X DELETE https://api.cryptolay.com.br/api/customer/api-keys/ak_1234567890abcdef \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -104,7 +104,7 @@ For administrative operations, you can use JWT tokens obtained through the custo
 <RequestExample>
 
 ```bash
-curl -X POST https://api.cryptolay.com/api/customer/auth/login \
+curl -X POST https://api.cryptolay.com.br/api/customer/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "user@example.com",
@@ -134,7 +134,7 @@ curl -X POST https://api.cryptolay.com/api/customer/auth/login \
 Include the JWT token in the `Authorization` header:
 
 ```bash
-curl -X GET https://api.cryptolay.com/api/customer/profile \
+curl -X GET https://api.cryptolay.com.br/api/customer/profile \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 

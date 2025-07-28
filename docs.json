@@ -9,82 +9,57 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "tabs": [
+    "groups": [
       {
-        "tab": "Introduction",
-        "groups": [
-          {
-            "group": "Overview",
-            "pages": [
-              "index",
-              "quickstart"
-            ]
-          }
+        "group": "Getting Started",
+        "pages": [
+          "index",
+          "quickstart"
         ]
       },
       {
-        "tab": "API Reference",
-        "groups": [
-          {
-            "group": "Core Endpoints",
-            "pages": [
-              "api-reference/authentication",
-              "api-reference/encryption",
-              "api-reference/decryption"
-            ]
-          },
-          {
-            "group": "Customer Management",
-            "pages": [
-              "api-reference/customers",
-              "api-reference/manifests",
-              "api-reference/billing"
-            ]
-          }
+        "group": "API Reference",
+        "pages": [
+          "api-reference/authentication",
+          "api-reference/encryption",
+          "api-reference/decryption",
+          "api-reference/customers",
+          "api-reference/manifests",
+          "api-reference/billing"
         ]
       },
       {
-        "tab": "Guides",
-        "groups": [
-          {
-            "group": "Authentication",
-            "pages": [
-              "guides/api-keys",
-              "guides/rsa-keys",
-              "guides/security"
-            ]
-          },
-          {
-            "group": "Integration",
-            "pages": [
-              "guides/getting-started",
-              "guides/sdks"
-            ]
-          },
-          {
-            "group": "Security",
-            "pages": [
-              "guides/security-best-practices",
-              "guides/compliance"
-            ]
-          }
+        "group": "Guides",
+        "pages": [
+          "guides/getting-started",
+          "guides/api-keys",
+          "guides/rsa-keys",
+          "guides/sdks",
+          "guides/security",
+          "guides/security-best-practices",
+          "guides/compliance"
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Website",
-          "href": "https://cryptolay.com",
-          "icon": "globe"
-        },
-        {
-          "anchor": "GitHub",
-          "href": "https://github.com/TorresAndy/cryptolay",
-          "icon": "github"
-        }
-      ]
-    }
+    ]
+  },
+  "global": {
+    "anchors": [
+      {
+        "anchor": "Website",
+        "href": "https://cryptolay.com.br",
+        "icon": "globe"
+      },
+      {
+        "anchor": "Documentation",
+        "href": "https://docs.cryptolay.com.br/",
+        "icon": "fa-solid fa-book"
+      },
+      {
+        "anchor": "API Reference",
+        "href": "https://docs.cryptolay.com.br/api-reference/authentication",
+        "icon": "fa-solid fa-code"
+      }
+    ]
   },
   "logo": {
     "light": "/logo/light.svg",
@@ -94,18 +69,17 @@
     "links": [
       {
         "label": "Pricing",
-        "href": "https://cryptolay.com/pricing"
+        "href": "https://cryptolay.com.br/dashboard/#pricing"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Get Started",
-      "href": "https://cryptolay.com/signup"
+      "href": "https://cryptolay.com.br/signup"
     }
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/cryptolay",
       "github": "https://github.com/TorresAndy/cryptolay",
       "linkedin": "https://linkedin.com/company/cryptolay"
     }

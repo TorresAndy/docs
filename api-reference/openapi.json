@@ -6,8 +6,8 @@
     "version": "1.0.0",
     "contact": {
       "name": "CryptoLay Support",
-      "email": "support@cryptolay.com",
-      "url": "https://cryptolay.com"
+      "email": "support@cryptolay.com.br",
+      "url": "https://cryptolay.com.br"
     },
     "license": {
       "name": "MIT",
@@ -16,11 +16,11 @@
   },
   "servers": [
     {
-      "url": "https://api.cryptolay.com",
+      "url": "https://api.cryptolay.com.br",
       "description": "Production server"
     },
     {
-      "url": "https://staging-api.cryptolay.com",
+      "url": "https://staging-api.cryptolay.com.br",
       "description": "Staging server"
     }
   ],

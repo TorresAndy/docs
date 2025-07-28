@@ -11,7 +11,7 @@ API keys are the primary method of authentication for the CryptoLay API. This gu
 
 ### Via Customer Dashboard
 
-1. Log into your [CryptoLay dashboard](https://app.cryptolay.com)
+1. Log into your [CryptoLay dashboard](https://app.cryptolay.com.br)
 2. Navigate to **API Keys** in the sidebar
 3. Click **Create New API Key**
 4. Fill in the details:
@@ -23,7 +23,7 @@ API keys are the primary method of authentication for the CryptoLay API. This gu
 ### Via API
 
 ```bash
-curl -X POST https://api.cryptolay.com/api/customer/api-keys \
+curl -X POST https://api.cryptolay.com.br/api/customer/api-keys \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{
@@ -48,21 +48,21 @@ curl -X POST https://api.cryptolay.com/api/customer/api-keys \
 ### List All API Keys
 
 ```bash
-curl -X GET https://api.cryptolay.com/api/customer/api-keys \
+curl -X GET https://api.cryptolay.com.br/api/customer/api-keys \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Get API Key Details
 
 ```bash
-curl -X GET https://api.cryptolay.com/api/customer/api-keys/ak_1234567890abcdef \
+curl -X GET https://api.cryptolay.com.br/api/customer/api-keys/ak_1234567890abcdef \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Update API Key
 
 ```bash
-curl -X PUT https://api.cryptolay.com/api/customer/api-keys/ak_1234567890abcdef \
+curl -X PUT https://api.cryptolay.com.br/api/customer/api-keys/ak_1234567890abcdef \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{
@@ -74,7 +74,7 @@ curl -X PUT https://api.cryptolay.com/api/customer/api-keys/ak_1234567890abcdef 
 ### Revoke API Key
 
 ```bash
-curl -X DELETE https://api.cryptolay.com/api/customer/api-keys/ak_1234567890abcdef \
+curl -X DELETE https://api.cryptolay.com.br/api/customer/api-keys/ak_1234567890abcdef \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -98,7 +98,7 @@ Create new keys and revoke old ones periodically:
 
 ```bash
 # Create new key
-curl -X POST https://api.cryptolay.com/api/customer/api-keys \
+curl -X POST https://api.cryptolay.com.br/api/customer/api-keys \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{
@@ -107,7 +107,7 @@ curl -X POST https://api.cryptolay.com/api/customer/api-keys \
   }'
 
 # Revoke old key
-curl -X DELETE https://api.cryptolay.com/api/customer/api-keys/OLD_KEY_ID \
+curl -X DELETE https://api.cryptolay.com.br/api/customer/api-keys/OLD_KEY_ID \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -147,7 +147,7 @@ Regularly check API key usage:
 
 ```bash
 # Get usage statistics
-curl -X GET https://api.cryptolay.com/api/customer/api-keys/ak_1234567890abcdef/usage \
+curl -X GET https://api.cryptolay.com.br/api/customer/api-keys/ak_1234567890abcdef/usage \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -183,64 +183,3 @@ try:
 except Exception as e:
     print(f"API key is invalid: {e}")
 ```
-
-### Ruby
-
-```ruby
-require 'cryptolay'
-
-client = Cryptolay::Client.new(api_key: ENV['CRYPTOLAY_API_KEY'])
-
-# Test the API key
-begin
-  client.test_connection
-  puts "API key is valid"
-rescue => e
-  puts "API key is invalid: #{e}"
-end
-```
-
-## Troubleshooting
-
-### Invalid API Key
-
-If you get a 401 error:
-
-1. Check that the API key is correct
-2. Verify the API key hasn't expired
-3. Ensure the API key has the required permissions
-
-### Rate Limiting
-
-If you get a 429 error:
-
-1. Check your current usage limits
-2. Implement exponential backoff
-3. Consider upgrading your plan
-
-### Expired API Key
-
-If your API key has expired:
-
-1. Create a new API key
-2. Update your application configuration
-3. Revoke the old API key
-
-## Next Steps
-
-<CardGroup cols={2}>
-  <Card
-    title="Encryption Guide"
-    href="/api-reference/encryption"
-    icon="lock"
-  >
-    Learn how to encrypt data with your API key
-  </Card>
-  <Card
-    title="Security Best Practices"
-    href="/guides/security-best-practices"
-    icon="shield"
-  >
-    Learn more about securing your integration
-  </Card>
-</CardGroup> 
