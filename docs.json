@@ -11,22 +11,14 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Getting Started",
+        "tab": "Introduction",
         "groups": [
           {
-            "group": "Introduction",
+            "group": "Overview",
             "pages": [
               "index",
               "quickstart",
               "development"
-            ]
-          },
-          {
-            "group": "Authentication",
-            "pages": [
-              "guides/api-keys",
-              "guides/rsa-keys",
-              "guides/security"
             ]
           }
         ]
@@ -63,6 +55,14 @@
       {
         "tab": "Guides",
         "groups": [
+          {
+            "group": "Authentication",
+            "pages": [
+              "guides/api-keys",
+              "guides/rsa-keys",
+              "guides/security"
+            ]
+          },
           {
             "group": "Integration",
             "pages": [
