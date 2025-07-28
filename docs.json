@@ -18,28 +18,27 @@
         ]
       },
       {
-        "group": "API Reference",
-        "pages": [
-          "api-reference/authentication",
-          "api-reference/encryption",
-          "api-reference/decryption",
-          "api-reference/customers",
-          "api-reference/manifests",
-          "api-reference/billing"
-        ]
-      },
-      {
         "group": "Guides",
         "pages": [
           "guides/getting-started",
           "guides/api-keys",
           "guides/rsa-keys",
-          "guides/sdks",
           "guides/security",
-          "guides/security-best-practices",
-          "guides/compliance"
+          "guides/security-best-practices"
+        ]
+      },
+      {
+        "group": "API Reference",
+        "pages": [
+          "api-reference/authentication",
+          "api-reference/encryption",
+          "api-reference/decryption",
+          "api-reference/manifests",
+          "api-reference/customers"
+          
         ]
       }
+     
     ]
   },
   "global": {
@@ -60,10 +59,6 @@
         "icon": "fa-solid fa-code"
       }
     ]
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
   },
   "navbar": {
     "links": [
