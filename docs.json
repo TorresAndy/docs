@@ -3,9 +3,9 @@
   "theme": "mint",
   "name": "CryptoLay Documentation",
   "colors": {
-    "primary": "#3B82F6",
-    "light": "#60A5FA",
-    "dark": "#1D4ED8"
+    "primary": "#0ea5e9",
+    "light": "#38bdf8",
+    "dark": "#0284c7"
   },
   "favicon": "/favicon.svg",
   "navigation": {
@@ -147,7 +147,7 @@
   "footer": {
     "socials": {
       "x": "https://x.com/cryptolay",
-      "github": "https://github.com/your-org/cryptolay",
+      "github": "https://github.com/TorresAndy/cryptolay",
       "linkedin": "https://linkedin.com/company/cryptolay"
     }
   }

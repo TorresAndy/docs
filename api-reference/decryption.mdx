@@ -1,0 +1,195 @@
+---
+title: 'Decryption'
+description: 'Decrypt data using CryptoLay manifests and metadata'
+---
+
+# Decryption API
+
+The decryption endpoint allows you to decrypt previously encrypted data using the original manifest and metadata.
+
+## Decrypt Data
+
+<RequestExample>
+
+```bash
+curl -X POST https://api.cryptolay.com/api/decrypt \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{
+    "manifest_id": "manifest-uuid",
+    "data": {
+      "email": "gAAAAABk...",
+      "phone": "gAAAAABk...",
+      "ssn": "gAAAAABk..."
+    },
+    "meta": {
+      "identifier": "req_1234567890abcdef",
+      "encrypted_key": "AQICAHj...",
+      "key_fingerprint": "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012",
+      "timestamp": "2024-01-01T00:00:00Z",
+      "algorithm": "AES-256-GCM"
+    }
+  }'
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json
+{
+  "decrypted_data": {
+    "email": "user@example.com",
+    "phone": "+1234567890",
+    "ssn": "123-45-6789"
+  },
+  "meta": {
+    "identifier": "req_1234567890abcdef",
+    "timestamp": "2024-01-01T00:00:00Z",
+    "algorithm": "AES-256-GCM"
+  }
+}
+```
+
+</ResponseExample>
+
+## Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `manifest_id` | string | Yes | UUID of the manifest used for encryption |
+| `data` | object | Yes | Object containing encrypted field values |
+| `meta` | object | Yes | Metadata from the original encryption request |
+
+### Meta Object Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `identifier` | string | Yes | Request identifier from encryption |
+| `encrypted_key` | string | Yes | AES key encrypted with KMS |
+| `key_fingerprint` | string | Yes | KMS key ARN used for encryption |
+| `timestamp` | string | Yes | ISO 8601 timestamp of encryption |
+| `algorithm` | string | Yes | Encryption algorithm used |
+
+## Response Fields
+
+### decrypted_data
+Object containing the decrypted values for each field.
+
+### meta
+Metadata from the decryption operation:
+
+- `identifier`: Request identifier
+- `timestamp`: Decryption timestamp
+- `algorithm`: Algorithm used
+
+## Error Responses
+
+### Invalid Manifest
+
+```json
+{
+  "error": "invalid_manifest",
+  "message": "Manifest not found or inactive",
+  "code": 400
+}
+```
+
+### Invalid Metadata
+
+```json
+{
+  "error": "invalid_metadata",
+  "message": "Metadata is invalid or corrupted",
+  "code": 400
+}
+```
+
+### Decryption Failed
+
+```json
+{
+  "error": "decryption_failed",
+  "message": "Failed to decrypt data",
+  "code": 400
+}
+```
+
+### Expired Key
+
+```json
+{
+  "error": "key_expired",
+  "message": "Encryption key has expired",
+  "code": 400
+}
+```
+
+## Examples
+
+### Basic Decryption
+
+```javascript
+const response = await fetch('https://api.cryptolay.com/api/decrypt', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-API-Key': 'your_api_key'
+  },
+  body: JSON.stringify({
+    manifest_id: 'manifest-uuid',
+    data: {
+      email: 'gAAAAABk...',
+      phone: 'gAAAAABk...'
+    },
+    meta: {
+      identifier: 'req_1234567890abcdef',
+      encrypted_key: 'AQICAHj...',
+      key_fingerprint: 'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012',
+      timestamp: '2024-01-01T00:00:00Z',
+      algorithm: 'AES-256-GCM'
+    }
+  })
+});
+
+const result = await response.json();
+console.log(result.decrypted_data);
+```
+
+### Python Example
+
+```python
+import requests
+
+response = requests.post(
+    'https://api.cryptolay.com/api/decrypt',
+    headers={
+        'Content-Type': 'application/json',
+        'X-API-Key': 'your_api_key'
+    },
+    json={
+        'manifest_id': 'manifest-uuid',
+        'data': {
+            'email': 'gAAAAABk...',
+            'phone': 'gAAAAABk...'
+        },
+        'meta': {
+            'identifier': 'req_1234567890abcdef',
+            'encrypted_key': 'AQICAHj...',
+            'key_fingerprint': 'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012',
+            'timestamp': '2024-01-01T00:00:00Z',
+            'algorithm': 'AES-256-GCM'
+        }
+    }
+)
+
+result = response.json()
+print(result['decrypted_data'])
+```
+
+## Security Notes
+
+- Always store the `meta` object securely with encrypted data
+- Decryption requires the exact same manifest used for encryption
+- Keys are automatically rotated and have expiration times
+- Failed decryption attempts are logged for security monitoring 

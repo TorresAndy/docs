@@ -1,97 +1,144 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: 'CryptoLay Documentation'
+description: 'Field-level encryption service for developers and organizations requiring compliance with GDPR, LGPD, HIPAA, and PCI-DSS.'
 ---
 
-## Setting up
+# CryptoLay Documentation
 
-Get your documentation site up and running in minutes.
+CryptoLay is a stateless, scalable cryptographic gateway that simplifies field-level encryption for applications. Built for developers and organizations requiring compliance with GDPR, LGPD, HIPAA, and PCI-DSS.
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
+<CardGroup cols={2}>
   <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
+    title="Quick Start"
+    href="/quickstart"
+    icon="zap"
   >
-    Edit your docs locally and preview them in real time.
+    Get up and running with CryptoLay in under 5 minutes
   </Card>
   <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
-
-## Create beautiful pages
-
-Everything you need to create world-class documentation.
-
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
+    title="API Reference"
+    href="/api-reference/authentication"
     icon="code"
-    href="/essentials/code"
   >
-    Add sample code to demonstrate how to use your product.
+    Complete API documentation with examples
+  </Card>
+</CardGroup>
+
+## What is CryptoLay?
+
+CryptoLay provides a secure, scalable encryption service that allows you to encrypt sensitive data at the field level while maintaining compliance with industry standards. Our platform handles the complexity of key management, encryption algorithms, and audit trails so you can focus on building your application.
+
+### Key Features
+
+<CardGroup cols={3}>
+  <Card
+    title="AES-256-GCM Encryption"
+    icon="shield"
+  >
+    Industry-standard encryption with authenticated encryption
   </Card>
   <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
+    title="AWS KMS Integration"
+    icon="key"
   >
-    Display images and other media.
+    Secure key management with AWS Key Management Service
   </Card>
   <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
+    title="Compliance Ready"
+    icon="check-circle"
   >
-    Write once and reuse across your docs.
+    Built for GDPR, LGPD, HIPAA, and PCI-DSS compliance
   </Card>
-</Columns>
+</CardGroup>
 
-## Need inspiration?
+## Architecture
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+The CryptoLay platform consists of four main applications:
+
+- **Main API** (Node.js Lambda) - Core encryption/decryption service
+- **Customer Admin** (Next.js) - Customer dashboard for managing encryption manifests
+- **System Admin** (Next.js) - Administrative interface for system management  
+- **Landing Page** (Next.js) - Public marketing and signup page
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- Docker & Docker Compose
+- PostgreSQL
+- AWS Account (for KMS and Lambda deployment)
+
+### Quick Setup
+
+1. **Start the database:**
+   ```bash
+   docker-compose up postgres -d
+   ```
+
+2. **Apply database schema:**
+   ```bash
+   psql -h localhost -U postgres -d cryptolay -f database/schema.sql
+   ```
+
+3. **Start the main API:**
+   ```bash
+   cd main-api
+   npm install
+   npm run dev
+   ```
+
+4. **Start frontend applications:**
+   ```bash
+   # Customer Admin
+   cd customer-admin
+   npm install
+   npm run dev
+
+   # System Admin  
+   cd system-admin
+   npm install
+   npm run dev
+
+   # Landing Page
+   cd landing-page
+   npm install
+   npm run dev
+   ```
+
+## Services Overview
+
+| Service | Port | Description |
+|---------|------|-------------|
+| Main API | 3000 | Encryption/decryption API |
+| Customer Admin | 3001 | Customer dashboard |
+| System Admin | 3002 | Admin interface |
+| Landing Page | 3003 | Public website |
+| PostgreSQL | 5432 | Database |
+
+## Security Features
+
+- **AES-256-GCM Encryption** - Industry-standard encryption
+- **AWS KMS Integration** - Secure key management
+- **API Key Authentication** - Required for all requests
+- **Rate Limiting** - Prevents abuse
+- **Request Logging** - Comprehensive audit trail
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Authentication"
+    href="/guides/api-keys"
+    icon="key"
+  >
+    Learn about API keys and authentication
+  </Card>
+  <Card
+    title="Encryption"
+    href="/api-reference/encryption"
+    icon="lock"
+  >
+    Start encrypting your data
+  </Card>
+</CardGroup>

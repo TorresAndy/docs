@@ -1,0 +1,246 @@
+---
+title: 'API Keys'
+description: 'Learn how to create, manage, and secure your API keys'
+---
+
+# API Keys Guide
+
+API keys are the primary method of authentication for the CryptoLay API. This guide covers creating, managing, and securing your API keys.
+
+## Creating API Keys
+
+### Via Customer Dashboard
+
+1. Log into your [CryptoLay dashboard](https://app.cryptolay.com)
+2. Navigate to **API Keys** in the sidebar
+3. Click **Create New API Key**
+4. Fill in the details:
+   - **Name**: A descriptive name for the key
+   - **Permissions**: Select the permissions this key should have
+   - **Expiration**: Optional expiration date
+5. Click **Create Key**
+
+### Via API
+
+```bash
+curl -X POST https://api.cryptolay.com/api/customer/api-keys \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "name": "Production API Key",
+    "permissions": ["encrypt", "decrypt", "read_logs"],
+    "expires_at": "2025-12-31T23:59:59Z"
+  }'
+```
+
+## API Key Permissions
+
+| Permission | Description | Use Case |
+|------------|-------------|----------|
+| `encrypt` | Can encrypt data using manifests | Production applications |
+| `decrypt` | Can decrypt data using manifests | Data processing services |
+| `read_logs` | Can view request logs | Monitoring and debugging |
+| `manage_manifests` | Can create and manage manifests | Configuration management |
+| `admin` | Full administrative access | System administration |
+
+## Managing API Keys
+
+### List All API Keys
+
+```bash
+curl -X GET https://api.cryptolay.com/api/customer/api-keys \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+### Get API Key Details
+
+```bash
+curl -X GET https://api.cryptolay.com/api/customer/api-keys/ak_1234567890abcdef \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+### Update API Key
+
+```bash
+curl -X PUT https://api.cryptolay.com/api/customer/api-keys/ak_1234567890abcdef \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "name": "Updated API Key Name",
+    "permissions": ["encrypt", "decrypt"]
+  }'
+```
+
+### Revoke API Key
+
+```bash
+curl -X DELETE https://api.cryptolay.com/api/customer/api-keys/ak_1234567890abcdef \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+## Security Best Practices
+
+### 1. Use Environment Variables
+
+Never hardcode API keys in your source code:
+
+```javascript
+// ❌ Bad
+const apiKey = 'cl_live_1234567890abcdef1234567890abcdef';
+
+// ✅ Good
+const apiKey = process.env.CRYPTOLAY_API_KEY;
+```
+
+### 2. Rotate Keys Regularly
+
+Create new keys and revoke old ones periodically:
+
+```bash
+# Create new key
+curl -X POST https://api.cryptolay.com/api/customer/api-keys \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "name": "New Production Key",
+    "permissions": ["encrypt", "decrypt"]
+  }'
+
+# Revoke old key
+curl -X DELETE https://api.cryptolay.com/api/customer/api-keys/OLD_KEY_ID \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+### 3. Use Minimal Permissions
+
+Only grant the permissions your application needs:
+
+```javascript
+// For a read-only monitoring service
+const permissions = ['read_logs'];
+
+// For a data processing service
+const permissions = ['decrypt'];
+
+// For a production application
+const permissions = ['encrypt', 'decrypt'];
+```
+
+### 4. Set Expiration Dates
+
+Always set expiration dates for API keys:
+
+```javascript
+const expiresAt = new Date();
+expiresAt.setFullYear(expiresAt.getFullYear() + 1); // 1 year from now
+
+const apiKeyData = {
+  name: 'Production API Key',
+  permissions: ['encrypt', 'decrypt'],
+  expires_at: expiresAt.toISOString()
+};
+```
+
+### 5. Monitor Usage
+
+Regularly check API key usage:
+
+```bash
+# Get usage statistics
+curl -X GET https://api.cryptolay.com/api/customer/api-keys/ak_1234567890abcdef/usage \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+## SDK Integration
+
+### JavaScript/Node.js
+
+```javascript
+const CryptoLay = require('cryptolay');
+
+const client = new CryptoLay({
+  apiKey: process.env.CRYPTOLAY_API_KEY
+});
+
+// Test the API key
+client.testConnection()
+  .then(() => console.log('API key is valid'))
+  .catch(err => console.error('API key is invalid:', err));
+```
+
+### Python
+
+```python
+import cryptolay
+import os
+
+client = cryptolay.Client(api_key=os.environ['CRYPTOLAY_API_KEY'])
+
+# Test the API key
+try:
+    client.test_connection()
+    print("API key is valid")
+except Exception as e:
+    print(f"API key is invalid: {e}")
+```
+
+### Ruby
+
+```ruby
+require 'cryptolay'
+
+client = Cryptolay::Client.new(api_key: ENV['CRYPTOLAY_API_KEY'])
+
+# Test the API key
+begin
+  client.test_connection
+  puts "API key is valid"
+rescue => e
+  puts "API key is invalid: #{e}"
+end
+```
+
+## Troubleshooting
+
+### Invalid API Key
+
+If you get a 401 error:
+
+1. Check that the API key is correct
+2. Verify the API key hasn't expired
+3. Ensure the API key has the required permissions
+
+### Rate Limiting
+
+If you get a 429 error:
+
+1. Check your current usage limits
+2. Implement exponential backoff
+3. Consider upgrading your plan
+
+### Expired API Key
+
+If your API key has expired:
+
+1. Create a new API key
+2. Update your application configuration
+3. Revoke the old API key
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Encryption Guide"
+    href="/api-reference/encryption"
+    icon="lock"
+  >
+    Learn how to encrypt data with your API key
+  </Card>
+  <Card
+    title="Security Best Practices"
+    href="/guides/security-best-practices"
+    icon="shield"
+  >
+    Learn more about securing your integration
+  </Card>
+</CardGroup> 

@@ -1,0 +1,233 @@
+---
+title: 'Authentication'
+description: 'Learn how to authenticate with the CryptoLay API using API keys'
+---
+
+# Authentication
+
+All CryptoLay API requests require authentication using API keys. API keys are used to identify your account and determine what permissions you have.
+
+## API Keys
+
+API keys are the primary method of authentication for the CryptoLay API. Each API key is associated with a specific customer account and has defined permissions.
+
+### Creating API Keys
+
+<RequestExample>
+
+```bash
+curl -X POST https://api.cryptolay.com/api/customer/api-keys \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "name": "Production API Key",
+    "permissions": ["encrypt", "decrypt", "read_logs"],
+    "expires_at": "2025-12-31T23:59:59Z"
+  }'
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json
+{
+  "id": "ak_1234567890abcdef",
+  "name": "Production API Key",
+  "key": "cl_live_1234567890abcdef1234567890abcdef",
+  "permissions": ["encrypt", "decrypt", "read_logs"],
+  "created_at": "2024-01-01T00:00:00Z",
+  "expires_at": "2025-12-31T23:59:59Z",
+  "last_used": null,
+  "status": "active"
+}
+```
+
+</ResponseExample>
+
+### Using API Keys
+
+Include your API key in the `X-API-Key` header with every request:
+
+```bash
+curl -X POST https://api.cryptolay.com/api/encrypt \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: cl_live_1234567890abcdef1234567890abcdef" \
+  -d '{
+    "manifest_id": "manifest-uuid",
+    "data": {
+      "email": "user@example.com"
+    }
+  }'
+```
+
+### API Key Permissions
+
+| Permission | Description |
+|------------|-------------|
+| `encrypt` | Can encrypt data using manifests |
+| `decrypt` | Can decrypt data using manifests |
+| `read_logs` | Can view request logs |
+| `manage_manifests` | Can create and manage manifests |
+| `admin` | Full administrative access |
+
+### Managing API Keys
+
+#### List API Keys
+
+<RequestExample>
+
+```bash
+curl -X GET https://api.cryptolay.com/api/customer/api-keys \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+</RequestExample>
+
+#### Revoke API Key
+
+<RequestExample>
+
+```bash
+curl -X DELETE https://api.cryptolay.com/api/customer/api-keys/ak_1234567890abcdef \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+</RequestExample>
+
+## JWT Authentication
+
+For administrative operations, you can use JWT tokens obtained through the customer admin interface.
+
+### Login
+
+<RequestExample>
+
+```bash
+curl -X POST https://api.cryptolay.com/api/customer/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "your_password"
+  }'
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "user-uuid",
+    "email": "user@example.com",
+    "role": "admin"
+  }
+}
+```
+
+</ResponseExample>
+
+### Using JWT Tokens
+
+Include the JWT token in the `Authorization` header:
+
+```bash
+curl -X GET https://api.cryptolay.com/api/customer/profile \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+## Rate Limiting
+
+API requests are rate limited to prevent abuse:
+
+- **Free Tier**: 1,000 requests per hour
+- **Pro Tier**: 10,000 requests per hour
+- **Enterprise**: Custom limits
+
+Rate limit headers are included in responses:
+
+```
+X-RateLimit-Limit: 1000
+X-RateLimit-Remaining: 999
+X-RateLimit-Reset: 1640995200
+```
+
+## Error Responses
+
+### Invalid API Key
+
+```json
+{
+  "error": "unauthorized",
+  "message": "Invalid API key",
+  "code": 401
+}
+```
+
+### Expired API Key
+
+```json
+{
+  "error": "unauthorized",
+  "message": "API key has expired",
+  "code": 401
+}
+```
+
+### Insufficient Permissions
+
+```json
+{
+  "error": "forbidden",
+  "message": "Insufficient permissions for this operation",
+  "code": 403
+}
+```
+
+### Rate Limit Exceeded
+
+```json
+{
+  "error": "rate_limit_exceeded",
+  "message": "Rate limit exceeded. Try again later.",
+  "code": 429
+}
+```
+
+## Security Best Practices
+
+1. **Keep API keys secure** - Never commit API keys to version control
+2. **Use environment variables** - Store API keys in environment variables
+3. **Rotate keys regularly** - Create new keys and revoke old ones periodically
+4. **Use minimal permissions** - Only grant the permissions your application needs
+5. **Monitor usage** - Regularly check API key usage and logs
+
+## SDK Authentication
+
+### JavaScript/Node.js
+
+```javascript
+const CryptoLay = require('cryptolay');
+
+const client = new CryptoLay({
+  apiKey: process.env.CRYPTOLAY_API_KEY
+});
+```
+
+### Python
+
+```python
+import cryptolay
+
+client = cryptolay.Client(api_key=os.environ['CRYPTOLAY_API_KEY'])
+```
+
+### Ruby
+
+```ruby
+require 'cryptolay'
+
+client = Cryptolay::Client.new(api_key: ENV['CRYPTOLAY_API_KEY'])
+``` 
