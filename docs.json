@@ -109,5 +109,6 @@
       "github": "https://github.com/TorresAndy/cryptolay",
       "linkedin": "https://linkedin.com/company/cryptolay"
     }
-  }
+  },
+  "openapi": "/api-reference/openapi.json"
 }

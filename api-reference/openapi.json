@@ -1,0 +1,527 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "CryptoLay API",
+    "description": "Field-level encryption service for developers and organizations requiring compliance with GDPR, LGPD, HIPAA, and PCI-DSS.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "CryptoLay Support",
+      "email": "support@cryptolay.com",
+      "url": "https://cryptolay.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.cryptolay.com",
+      "description": "Production server"
+    },
+    {
+      "url": "https://staging-api.cryptolay.com",
+      "description": "Staging server"
+    }
+  ],
+  "paths": {
+    "/api/encrypt": {
+      "post": {
+        "summary": "Encrypt data using manifest",
+        "description": "Encrypt sensitive data using a predefined manifest. The manifest defines which fields should be encrypted and how.",
+        "operationId": "encryptData",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EncryptRequest"
+              },
+              "examples": {
+                "user-data": {
+                  "summary": "Encrypt user data",
+                  "value": {
+                    "manifestId": "manifest-uuid-123",
+                    "data": {
+                      "email": "user@example.com",
+                      "phone": "+1234567890",
+                      "ssn": "123-45-6789",
+                      "firstName": "John",
+                      "lastName": "Doe"
+                    }
+                  }
+                },
+                "payment-data": {
+                  "summary": "Encrypt payment data",
+                  "value": {
+                    "manifestId": "payment-manifest-uuid",
+                    "data": {
+                      "cardNumber": "4111-1111-1111-1111",
+                      "cvv": "123",
+                      "expiryDate": "12/25",
+                      "cardholderName": "John Doe"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Data encrypted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EncryptResponse"
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Successful encryption",
+                    "value": {
+                      "manifestId": "manifest-uuid-123",
+                      "data": {
+                        "email": "base64-encrypted-email",
+                        "phone": "base64-encrypted-phone",
+                        "ssn": "base64-encrypted-ssn",
+                        "firstName": "John",
+                        "lastName": "Doe"
+                      },
+                      "meta": {
+                        "identifier": "request-uuid-123",
+                        "encryptedKey": "base64-encrypted-aes-key",
+                        "keyFingerprint": "rsa-key-uuid-123",
+                        "timestamp": "2024-01-01T00:00:00Z",
+                        "algorithm": "AES-256-GCM"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "missing-manifest": {
+                    "summary": "Missing manifest ID",
+                    "value": {
+                      "error": "Missing manifest_id"
+                    }
+                  },
+                  "missing-data": {
+                    "summary": "Missing data",
+                    "value": {
+                      "error": "Missing data"
+                    }
+                  },
+                  "invalid-field": {
+                    "summary": "Invalid field type",
+                    "value": {
+                      "error": "Field email must be a string"
+                    }
+                  },
+                  "invalid-manifest": {
+                    "summary": "Invalid manifest",
+                    "value": {
+                      "error": "Invalid manifest_id"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "missing-api-key": {
+                    "summary": "Missing API key",
+                    "value": {
+                      "error": "API key required"
+                    }
+                  },
+                  "invalid-api-key": {
+                    "summary": "Invalid API key",
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": "Request limit exceeded"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": "Manifest missing RSA key configuration"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/decrypt": {
+      "post": {
+        "summary": "Decrypt data using manifest",
+        "description": "Decrypt previously encrypted data using the original manifest and metadata.",
+        "operationId": "decryptData",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecryptRequest"
+              },
+              "examples": {
+                "user-data": {
+                  "summary": "Decrypt user data",
+                  "value": {
+                    "manifestId": "manifest-uuid-123",
+                    "data": {
+                      "email": "base64-encrypted-email",
+                      "phone": "base64-encrypted-phone",
+                      "ssn": "base64-encrypted-ssn",
+                      "firstName": "John",
+                      "lastName": "Doe"
+                    },
+                    "meta": {
+                      "identifier": "request-uuid-123",
+                      "encryptedKey": "base64-encrypted-aes-key",
+                      "keyFingerprint": "rsa-key-uuid-123",
+                      "timestamp": "2024-01-01T00:00:00Z",
+                      "algorithm": "AES-256-GCM"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Data decrypted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecryptResponse"
+                },
+                "example": {
+                  "manifestId": "manifest-uuid-123",
+                  "data": {
+                    "email": "user@example.com",
+                    "phone": "+1234567890",
+                    "ssn": "123-45-6789",
+                    "firstName": "John",
+                    "lastName": "Doe"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "missing-manifest": {
+                    "summary": "Missing manifest ID",
+                    "value": {
+                      "error": "Missing manifest_id"
+                    }
+                  },
+                  "missing-data": {
+                    "summary": "Missing data",
+                    "value": {
+                      "error": "Missing data"
+                    }
+                  },
+                  "missing-encrypted-key": {
+                    "summary": "Missing encrypted key",
+                    "value": {
+                      "error": "Missing encrypted key"
+                    }
+                  },
+                  "missing-key-fingerprint": {
+                    "summary": "Missing key fingerprint",
+                    "value": {
+                      "error": "Missing keyFingerprint in meta data"
+                    }
+                  },
+                  "invalid-base64": {
+                    "summary": "Invalid base64 encoding",
+                    "value": {
+                      "error": "Invalid base64 encoding for field email"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "missing-api-key": {
+                    "summary": "Missing API key",
+                    "value": {
+                      "error": "API key required"
+                    }
+                  },
+                  "invalid-api-key": {
+                    "summary": "Invalid API key",
+                    "value": {
+                      "error": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": "Request limit exceeded"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "API key for authentication. Include your API key in the X-API-Key header."
+      }
+    },
+    "schemas": {
+      "EncryptRequest": {
+        "type": "object",
+        "required": ["manifestId", "data"],
+        "properties": {
+          "manifestId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the manifest to use for encryption",
+            "example": "manifest-uuid-123"
+          },
+          "data": {
+            "type": "object",
+            "description": "Data to encrypt. Only fields defined in the manifest will be encrypted.",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "minProperties": 1,
+            "example": {
+              "email": "user@example.com",
+              "phone": "+1234567890",
+              "ssn": "123-45-6789",
+              "firstName": "John",
+              "lastName": "Doe"
+            }
+          }
+        }
+      },
+      "EncryptResponse": {
+        "type": "object",
+        "properties": {
+          "manifestId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the manifest used for encryption",
+            "example": "manifest-uuid-123"
+          },
+          "data": {
+            "type": "object",
+            "description": "Encrypted data. Fields marked for encryption in the manifest will be base64-encoded encrypted values. Other fields remain unchanged.",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "example": {
+              "email": "base64-encrypted-email",
+              "phone": "base64-encrypted-phone",
+              "ssn": "base64-encrypted-ssn",
+              "firstName": "John",
+              "lastName": "Doe"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/MetaData"
+          }
+        }
+      },
+      "DecryptRequest": {
+        "type": "object",
+        "required": ["manifestId", "data", "meta"],
+        "properties": {
+          "manifestId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the manifest used for encryption",
+            "example": "manifest-uuid-123"
+          },
+          "data": {
+            "type": "object",
+            "description": "Data to decrypt. Must include the same fields as the original encryption request.",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "minProperties": 1,
+            "example": {
+              "email": "base64-encrypted-email",
+              "phone": "base64-encrypted-phone",
+              "ssn": "base64-encrypted-ssn",
+              "firstName": "John",
+              "lastName": "Doe"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/MetaData"
+          }
+        }
+      },
+      "DecryptResponse": {
+        "type": "object",
+        "properties": {
+          "manifestId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the manifest used for decryption",
+            "example": "manifest-uuid-123"
+          },
+          "data": {
+            "type": "object",
+            "description": "Decrypted data. Fields that were encrypted will be decrypted to their original values.",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "example": {
+              "email": "user@example.com",
+              "phone": "+1234567890",
+              "ssn": "123-45-6789",
+              "firstName": "John",
+              "lastName": "Doe"
+            }
+          }
+        }
+      },
+      "MetaData": {
+        "type": "object",
+        "required": ["identifier", "encryptedKey", "keyFingerprint", "timestamp"],
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for this encryption request",
+            "example": "request-uuid-123"
+          },
+          "encryptedKey": {
+            "type": "string",
+            "description": "Base64-encoded AES key encrypted with RSA",
+            "example": "base64-encrypted-aes-key"
+          },
+          "keyFingerprint": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the RSA key used for encryption",
+            "example": "rsa-key-uuid-123"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of when the encryption was performed",
+            "example": "2024-01-01T00:00:00Z"
+          },
+          "algorithm": {
+            "type": "string",
+            "description": "Encryption algorithm used",
+            "example": "AES-256-GCM",
+            "default": "AES-256-GCM"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message",
+            "example": "Invalid API key"
+          },
+          "details": {
+            "type": "object",
+            "description": "Additional error details",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "example": {
+              "field": "email",
+              "reason": "Field must be a string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Encryption",
+      "description": "Core encryption and decryption operations"
+    }
+  ]
+} 
