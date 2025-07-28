@@ -5,7 +5,7 @@ description: 'Create and manage encryption manifests for CryptoLay'
 
 # Manifests API
 
-Manifests define which fields should be encrypted in your data. This API allows you to create, list, update, and delete manifests.
+Manifests define which fields should be encrypted in your data and how they should be encrypted. This API allows you to create, list, update, and delete manifests.
 
 ## Create Manifest
 
@@ -18,8 +18,32 @@ curl -X POST https://api.cryptolay.com/api/customer/manifests \
   -H "X-API-Key: YOUR_API_KEY" \
   -d '{
     "name": "User Data Manifest",
-    "fields": ["email", "phone", "ssn"],
-    "description": "Encrypts sensitive user information"
+    "description": "Encrypts sensitive user information",
+    "config": {
+      "version": "1.0",
+      "description": "User data encryption configuration"
+    },
+    "encryptionRules": {
+      "fields": {
+        "email": {
+          "encrypted": true,
+          "type": "string"
+        },
+        "phone": {
+          "encrypted": true,
+          "type": "string"
+        },
+        "ssn": {
+          "encrypted": true,
+          "type": "string"
+        },
+        "address": {
+          "encrypted": false,
+          "type": "string"
+        }
+      },
+      "rsaKeyId": "key-uuid-123"
+    }
   }'
 ```
 </RequestExample>
@@ -29,11 +53,34 @@ curl -X POST https://api.cryptolay.com/api/customer/manifests \
 {
   "id": "manifest-uuid-123",
   "name": "User Data Manifest",
-  "fields": ["email", "phone", "ssn"],
   "description": "Encrypts sensitive user information",
+  "config": {
+    "version": "1.0",
+    "description": "User data encryption configuration"
+  },
+  "encryptionRules": {
+    "fields": {
+      "email": {
+        "encrypted": true,
+        "type": "string"
+      },
+      "phone": {
+        "encrypted": true,
+        "type": "string"
+      },
+      "ssn": {
+        "encrypted": true,
+        "type": "string"
+      },
+      "address": {
+        "encrypted": false,
+        "type": "string"
+      }
+    },
+    "rsaKeyId": "key-uuid-123"
+  },
   "status": "active",
-  "created_at": "2024-01-01T00:00:00Z",
-  "updated_at": "2024-01-01T00:00:00Z"
+  "createdAt": "2024-01-01T00:00:00Z"
 }
 ```
 </ResponseExample>
@@ -43,8 +90,38 @@ curl -X POST https://api.cryptolay.com/api/customer/manifests \
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `name` | string | Yes | A descriptive name for the manifest |
-| `fields` | array | Yes | Array of field names to encrypt |
 | `description` | string | No | Optional description of the manifest |
+| `config` | object | No | Configuration object for the manifest |
+| `encryptionRules` | object | Yes | Encryption rules defining field behavior |
+
+### Encryption Rules Structure
+
+The `encryptionRules` object defines how fields should be encrypted:
+
+```json
+{
+  "fields": {
+    "fieldName": {
+      "encrypted": true|false,
+      "type": "string"
+    }
+  },
+  "rsaKeyId": "key-uuid-123"
+}
+```
+
+#### Field Rules
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `encrypted` | boolean | Yes | Whether the field should be encrypted |
+| `type` | string | Yes | Data type (currently only "string" supported) |
+
+#### RSA Key Configuration
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `rsaKeyId` | string | Yes | UUID of the RSA key to use for encryption |
 
 ### Response Fields
 
@@ -52,11 +129,11 @@ curl -X POST https://api.cryptolay.com/api/customer/manifests \
 |-------|------|-------------|
 | `id` | string | Unique manifest identifier |
 | `name` | string | Manifest name |
-| `fields` | array | Array of encrypted field names |
 | `description` | string | Manifest description |
-| `status` | string | Manifest status (active/inactive) |
-| `created_at` | string | ISO 8601 timestamp |
-| `updated_at` | string | ISO 8601 timestamp |
+| `config` | object | Manifest configuration |
+| `encryptionRules` | object | Encryption rules |
+| `status` | string | Manifest status (active/inactive/draft) |
+| `createdAt` | string | ISO 8601 timestamp |
 
 ## List Manifests
 
@@ -64,7 +141,7 @@ Retrieve all manifests for your account.
 
 <RequestExample>
 ```bash
-curl -X GET https://api.cryptolay.com/api/customer/manifests \
+curl -X GET "https://api.cryptolay.com/api/customer/manifests?page=1&limit=10&search=user&status=active" \
   -H "X-API-Key: YOUR_API_KEY"
 ```
 </RequestExample>
@@ -72,20 +149,40 @@ curl -X GET https://api.cryptolay.com/api/customer/manifests \
 <ResponseExample>
 ```json
 {
-  "manifests": [
+  "data": [
     {
       "id": "manifest-uuid-123",
       "name": "User Data Manifest",
-      "fields": ["email", "phone", "ssn"],
       "description": "Encrypts sensitive user information",
+      "config": {
+        "version": "1.0"
+      },
+      "encryptionRules": {
+        "fields": {
+          "email": {
+            "encrypted": true,
+            "type": "string"
+          },
+          "phone": {
+            "encrypted": true,
+            "type": "string"
+          }
+        },
+        "rsaKeyId": "key-uuid-123"
+      },
       "status": "active",
-      "created_at": "2024-01-01T00:00:00Z",
-      "updated_at": "2024-01-01T00:00:00Z"
+      "createdAt": "2024-01-01T00:00:00Z",
+      "updatedAt": "2024-01-01T00:00:00Z"
     }
   ],
-  "total": 1,
-  "page": 1,
-  "limit": 10
+  "pagination": {
+    "currentPage": 1,
+    "totalPages": 1,
+    "totalItems": 1,
+    "itemsPerPage": 10,
+    "hasNextPage": false,
+    "hasPrevPage": false
+  }
 }
 ```
 </ResponseExample>
@@ -95,8 +192,9 @@ curl -X GET https://api.cryptolay.com/api/customer/manifests \
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `page` | integer | 1 | Page number for pagination |
-| `limit` | integer | 10 | Number of manifests per page |
-| `status` | string | all | Filter by status (active/inactive/all) |
+| `limit` | integer | 25 | Number of manifests per page |
+| `search` | string | - | Search manifests by name or description |
+| `status` | string | - | Filter by status (active/inactive/draft) |
 
 ## Get Manifest
 
@@ -114,11 +212,31 @@ curl -X GET https://api.cryptolay.com/api/customer/manifests/manifest-uuid-123 \
 {
   "id": "manifest-uuid-123",
   "name": "User Data Manifest",
-  "fields": ["email", "phone", "ssn"],
   "description": "Encrypts sensitive user information",
+  "config": {
+    "version": "1.0",
+    "description": "User data encryption configuration"
+  },
+  "encryptionRules": {
+    "fields": {
+      "email": {
+        "encrypted": true,
+        "type": "string"
+      },
+      "phone": {
+        "encrypted": true,
+        "type": "string"
+      },
+      "ssn": {
+        "encrypted": true,
+        "type": "string"
+      }
+    },
+    "rsaKeyId": "key-uuid-123"
+  },
   "status": "active",
-  "created_at": "2024-01-01T00:00:00Z",
-  "updated_at": "2024-01-01T00:00:00Z"
+  "createdAt": "2024-01-01T00:00:00Z",
+  "updatedAt": "2024-01-01T00:00:00Z"
 }
 ```
 </ResponseExample>
@@ -134,8 +252,29 @@ curl -X PUT https://api.cryptolay.com/api/customer/manifests/manifest-uuid-123 \
   -H "X-API-Key: YOUR_API_KEY" \
   -d '{
     "name": "Updated User Data Manifest",
-    "fields": ["email", "phone", "ssn", "address"],
-    "description": "Updated description"
+    "description": "Updated description",
+    "encryptionRules": {
+      "fields": {
+        "email": {
+          "encrypted": true,
+          "type": "string"
+        },
+        "phone": {
+          "encrypted": true,
+          "type": "string"
+        },
+        "ssn": {
+          "encrypted": true,
+          "type": "string"
+        },
+        "address": {
+          "encrypted": true,
+          "type": "string"
+        }
+      },
+      "rsaKeyId": "key-uuid-456"
+    },
+    "status": "active"
   }'
 ```
 </RequestExample>
@@ -145,11 +284,34 @@ curl -X PUT https://api.cryptolay.com/api/customer/manifests/manifest-uuid-123 \
 {
   "id": "manifest-uuid-123",
   "name": "Updated User Data Manifest",
-  "fields": ["email", "phone", "ssn", "address"],
   "description": "Updated description",
+  "config": {
+    "version": "1.0"
+  },
+  "encryptionRules": {
+    "fields": {
+      "email": {
+        "encrypted": true,
+        "type": "string"
+      },
+      "phone": {
+        "encrypted": true,
+        "type": "string"
+      },
+      "ssn": {
+        "encrypted": true,
+        "type": "string"
+      },
+      "address": {
+        "encrypted": true,
+        "type": "string"
+      }
+    },
+    "rsaKeyId": "key-uuid-456"
+  },
   "status": "active",
-  "created_at": "2024-01-01T00:00:00Z",
-  "updated_at": "2024-01-01T12:00:00Z"
+  "updatedAt": "2024-01-01T12:00:00Z",
+  "message": "Manifest updated successfully"
 }
 ```
 </ResponseExample>
@@ -159,8 +321,10 @@ curl -X PUT https://api.cryptolay.com/api/customer/manifests/manifest-uuid-123 \
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `name` | string | No | New manifest name |
-| `fields` | array | No | Updated array of field names |
 | `description` | string | No | Updated description |
+| `config` | object | No | Updated configuration |
+| `encryptionRules` | object | No | Updated encryption rules |
+| `status` | string | No | New status (active/inactive/draft) |
 
 ## Delete Manifest
 
@@ -181,6 +345,125 @@ curl -X DELETE https://api.cryptolay.com/api/customer/manifests/manifest-uuid-12
 ```
 </ResponseExample>
 
+## Manifest Examples
+
+### Basic User Data Manifest
+
+```json
+{
+  "name": "User Profile Manifest",
+  "description": "Encrypts user profile information",
+  "config": {
+    "version": "1.0"
+  },
+  "encryptionRules": {
+    "fields": {
+      "email": {
+        "encrypted": true,
+        "type": "string"
+      },
+      "phone": {
+        "encrypted": true,
+        "type": "string"
+      },
+      "ssn": {
+        "encrypted": true,
+        "type": "string"
+      },
+      "firstName": {
+        "encrypted": false,
+        "type": "string"
+      },
+      "lastName": {
+        "encrypted": false,
+        "type": "string"
+      }
+    },
+    "rsaKeyId": "key-uuid-123"
+  }
+}
+```
+
+### Payment Data Manifest
+
+```json
+{
+  "name": "Payment Information Manifest",
+  "description": "Encrypts payment card information",
+  "config": {
+    "version": "1.0",
+    "compliance": "PCI-DSS"
+  },
+  "encryptionRules": {
+    "fields": {
+      "cardNumber": {
+        "encrypted": true,
+        "type": "string"
+      },
+      "cvv": {
+        "encrypted": true,
+        "type": "string"
+      },
+      "expiryDate": {
+        "encrypted": true,
+        "type": "string"
+      },
+      "cardholderName": {
+        "encrypted": true,
+        "type": "string"
+      },
+      "billingAddress": {
+        "encrypted": false,
+        "type": "string"
+      }
+    },
+    "rsaKeyId": "key-uuid-456"
+  }
+}
+```
+
+### Healthcare Data Manifest
+
+```json
+{
+  "name": "Patient Data Manifest",
+  "description": "Encrypts patient health information",
+  "config": {
+    "version": "1.0",
+    "compliance": "HIPAA"
+  },
+  "encryptionRules": {
+    "fields": {
+      "patientId": {
+        "encrypted": false,
+        "type": "string"
+      },
+      "name": {
+        "encrypted": true,
+        "type": "string"
+      },
+      "ssn": {
+        "encrypted": true,
+        "type": "string"
+      },
+      "diagnosis": {
+        "encrypted": true,
+        "type": "string"
+      },
+      "medications": {
+        "encrypted": true,
+        "type": "string"
+      },
+      "roomNumber": {
+        "encrypted": false,
+        "type": "string"
+      }
+    },
+    "rsaKeyId": "key-uuid-789"
+  }
+}
+```
+
 ## Error Responses
 
 ### 400 Bad Request
@@ -190,7 +473,7 @@ curl -X DELETE https://api.cryptolay.com/api/customer/manifests/manifest-uuid-12
   "error": "Validation failed",
   "details": {
     "name": "Name is required",
-    "fields": "At least one field must be specified"
+    "encryptionRules": "Encryption rules are required"
   }
 }
 ```
@@ -234,8 +517,28 @@ const createManifest = async () => {
     },
     body: JSON.stringify({
       name: 'Payment Data Manifest',
-      fields: ['cardNumber', 'cvv', 'expiryDate'],
-      description: 'Encrypts payment information'
+      description: 'Encrypts payment information',
+      config: {
+        version: '1.0',
+        compliance: 'PCI-DSS'
+      },
+      encryptionRules: {
+        fields: {
+          cardNumber: {
+            encrypted: true,
+            type: 'string'
+          },
+          cvv: {
+            encrypted: true,
+            type: 'string'
+          },
+          expiryDate: {
+            encrypted: true,
+            type: 'string'
+          }
+        },
+        rsaKeyId: 'key-uuid-123'
+      }
     })
   });
   
@@ -269,8 +572,28 @@ def create_manifest():
         },
         json={
             'name': 'Payment Data Manifest',
-            'fields': ['cardNumber', 'cvv', 'expiryDate'],
-            'description': 'Encrypts payment information'
+            'description': 'Encrypts payment information',
+            'config': {
+                'version': '1.0',
+                'compliance': 'PCI-DSS'
+            },
+            'encryptionRules': {
+                'fields': {
+                    'cardNumber': {
+                        'encrypted': True,
+                        'type': 'string'
+                    },
+                    'cvv': {
+                        'encrypted': True,
+                        'type': 'string'
+                    },
+                    'expiryDate': {
+                        'encrypted': True,
+                        'type': 'string'
+                    }
+                },
+                'rsaKeyId': 'key-uuid-123'
+            }
         }
     )
     return response.json()
@@ -286,15 +609,19 @@ def list_manifests():
 
 ## Best Practices
 
-1. **Use descriptive names** for your manifests to easily identify their purpose
-2. **Include all required fields** in the fields array to ensure consistent encryption
-3. **Keep manifests focused** - create separate manifests for different data types
-4. **Test manifests** with sample data before using in production
-5. **Monitor usage** to ensure manifests are being used correctly
+1. **Use Descriptive Names** - Choose clear, descriptive names for your manifests
+2. **Include All Fields** - Define all fields that might be used, even if not encrypted
+3. **Separate by Data Type** - Create different manifests for different data types (user data, payment data, etc.)
+4. **Test Manifests** - Test manifests with sample data before using in production
+5. **Monitor Usage** - Track which manifests are being used most frequently
+6. **Version Control** - Use the config.version field to track manifest versions
+7. **Compliance Notes** - Add compliance information in the config object
 
 ## Security Notes
 
-- Manifests are tied to your API key
+- Manifests are tied to your API key and customer account
 - Only active manifests can be used for encryption
 - Deleted manifests cannot be recovered
-- Field names are case-sensitive 
+- RSA key IDs must be valid and active
+- Field names are case-sensitive
+- All encrypted fields must be strings 
