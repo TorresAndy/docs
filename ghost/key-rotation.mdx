@@ -1,0 +1,408 @@
+---
+title: 'Ghost Key Rotation'
+description: 'Understanding endpoint path rotation policies and modes'
+---
+
+# Ghost Key Rotation
+
+Ghost automatically rotates endpoint aliases to prevent abuse and make reconnaissance impossible. Different rotation policies provide varying levels of security and overhead.
+
+## Rotation Policies
+
+### Standard Rotation
+
+The default rotation policy, suitable for most applications.
+
+<CardGroup cols={2}>
+  <Card
+    title="Frequency"
+    icon="clock"
+  >
+    Every 24 hours
+  </Card>
+  <Card
+    title="Use Case"
+    icon="shield"
+  >
+    General API protection
+  </Card>
+</CardGroup>
+
+**Characteristics:**
+- **Frequency**: Every 24 hours
+- **Overhead**: Low
+- **Protection**: Basic
+- **Best For**: Public APIs, general web services
+
+**Example:**
+```javascript
+// Day 1
+POST /e9k1zv
+
+// Day 2 (after rotation)
+POST /a1b2c3
+
+// Day 3 (after rotation)
+POST /x7m2qw
+```
+
+### Aggressive Rotation
+
+Enhanced security for sensitive applications.
+
+<CardGroup cols={2}>
+  <Card
+    title="Frequency"
+    icon="clock"
+  >
+    Every 6 hours
+  </Card>
+  <Card
+    title="Use Case"
+    icon="shield"
+  >
+    High-security applications
+  </Card>
+</CardGroup>
+
+**Characteristics:**
+- **Frequency**: Every 6 hours
+- **Overhead**: Medium
+- **Protection**: Enhanced
+- **Best For**: Financial services, healthcare APIs
+
+**Example:**
+```javascript
+// 00:00 - 06:00
+POST /e9k1zv
+
+// 06:00 - 12:00
+POST /a1b2c3
+
+// 12:00 - 18:00
+POST /x7m2qw
+
+// 18:00 - 00:00
+POST /y8n3rx
+```
+
+### Super Aggressive Rotation
+
+Maximum security for critical systems.
+
+<CardGroup cols={2}>
+  <Card
+    title="Frequency"
+    icon="clock"
+  >
+    Every hour
+  </Card>
+  <Card
+    title="Use Case"
+    icon="shield"
+  >
+    Maximum security requirements
+  </Card>
+</CardGroup>
+
+**Characteristics:**
+- **Frequency**: Every hour
+- **Overhead**: Higher
+- **Protection**: Maximum
+- **Best For**: Government, military, critical infrastructure
+
+**Example:**
+```javascript
+// 00:00 - 01:00
+POST /e9k1zv
+
+// 01:00 - 02:00
+POST /a1b2c3
+
+// 02:00 - 03:00
+POST /x7m2qw
+
+// ... continues every hour
+```
+
+## Setting Rotation Policies
+
+### When Creating Endpoints
+
+Set the rotation policy when creating an endpoint:
+
+<RequestExample>
+```bash
+curl -X POST https://api.cryptolay.com.br/api/ghost/endpoints \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{
+    "realEndpoint": "/api/v1/users/login",
+    "rotation": "aggressive",
+    "description": "User login with aggressive rotation"
+  }'
+```
+</RequestExample>
+
+### Updating Existing Endpoints
+
+Change rotation policy for existing endpoints:
+
+<RequestExample>
+```bash
+curl -X PUT https://api.cryptolay.com.br/api/ghost/endpoints/endpoint-uuid-123 \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{
+    "rotation": "super-aggressive"
+  }'
+```
+</RequestExample>
+
+## Rotation Behavior
+
+### Automatic Rotation
+
+Ghost automatically rotates endpoint aliases based on the configured policy:
+
+```javascript
+// Endpoint configuration
+{
+  "realEndpoint": "/api/v1/users/login",
+  "alias": "/e9k1zv",
+  "rotation": "standard",
+  "nextRotation": "2024-01-02T00:00:00Z"
+}
+
+// After rotation
+{
+  "realEndpoint": "/api/v1/users/login",
+  "alias": "/a1b2c3",
+  "rotation": "standard",
+  "nextRotation": "2024-01-03T00:00:00Z"
+}
+```
+
+### Rotation Timing
+
+Rotations occur at specific intervals:
+
+- **Standard**: Every 24 hours at 00:00 UTC
+- **Aggressive**: Every 6 hours (00:00, 06:00, 12:00, 18:00 UTC)
+- **Super Aggressive**: Every hour on the hour
+
+### Path Generation
+
+New aliases are generated using AES-256 encryption:
+
+```javascript
+// Algorithm for generating new aliases
+const newAlias = aes256.encrypt(
+  realEndpoint + timestamp + secretKey
+).substring(0, 6);
+```
+
+## Monitoring Rotations
+
+### Get Rotation Schedule
+
+Check when the next rotation will occur:
+
+<RequestExample>
+```bash
+curl -X GET https://api.cryptolay.com.br/api/ghost/endpoints/endpoint-uuid-123 \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "id": "endpoint-uuid-123",
+  "realEndpoint": "/api/v1/users/login",
+  "alias": "/e9k1zv",
+  "rotation": "standard",
+  "nextRotation": "2024-01-02T00:00:00Z",
+  "lastRotation": "2024-01-01T00:00:00Z",
+  "rotationCount": 15
+}
+```
+</ResponseExample>
+
+### Rotation History
+
+Get rotation history for an endpoint:
+
+<RequestExample>
+```bash
+curl -X GET https://api.cryptolay.com.br/api/ghost/endpoints/endpoint-uuid-123/rotations \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "rotations": [
+    {
+      "timestamp": "2024-01-01T00:00:00Z",
+      "oldAlias": "/x7m2qw",
+      "newAlias": "/e9k1zv",
+      "policy": "standard"
+    },
+    {
+      "timestamp": "2023-12-31T00:00:00Z",
+      "oldAlias": "/a1b2c3",
+      "newAlias": "/x7m2qw",
+      "policy": "standard"
+    }
+  ]
+}
+```
+</ResponseExample>
+
+## Best Practices
+
+### Choosing Rotation Policies
+
+#### Use Standard Rotation For:
+- Public APIs
+- General web services
+- Low-security requirements
+- Cost-sensitive applications
+
+#### Use Aggressive Rotation For:
+- Financial services
+- Healthcare APIs
+- E-commerce platforms
+- User authentication
+
+#### Use Super Aggressive Rotation For:
+- Government systems
+- Military applications
+- Critical infrastructure
+- Maximum security requirements
+
+### Client Considerations
+
+#### Handling Rotations
+
+Clients should handle rotation gracefully:
+
+```javascript
+// Good: Use current alias from API
+const getCurrentAlias = async () => {
+  const response = await fetch('/api/ghost/endpoints/current');
+  return response.json().alias;
+};
+
+// Bad: Hardcode aliases
+const loginAlias = '/e9k1zv'; // This will break after rotation
+```
+
+#### Caching Aliases
+
+Cache aliases with appropriate TTL:
+
+```javascript
+// Cache alias for 1 hour (for aggressive rotation)
+const aliasCache = new Map();
+const getAlias = async (endpointId) => {
+  if (aliasCache.has(endpointId)) {
+    const cached = aliasCache.get(endpointId);
+    if (Date.now() - cached.timestamp < 3600000) {
+      return cached.alias;
+    }
+  }
+  
+  const alias = await fetchCurrentAlias(endpointId);
+  aliasCache.set(endpointId, {
+    alias,
+    timestamp: Date.now()
+  });
+  
+  return alias;
+};
+```
+
+### Security Considerations
+
+#### Never Expose Real Endpoints
+
+```javascript
+// Good: Use Ghost aliases
+const loginUrl = 'https://ghost.cryptolay.com.br/e9k1zv';
+
+// Bad: Expose real endpoint
+const loginUrl = 'https://api.example.com/api/v1/users/login';
+```
+
+#### Monitor Rotation Events
+
+```javascript
+// Set up webhooks for rotation events
+const webhookUrl = 'https://your-app.com/ghost-rotation';
+const response = await fetch('/api/ghost/webhooks', {
+  method: 'POST',
+  body: JSON.stringify({
+    url: webhookUrl,
+    events: ['rotation']
+  })
+});
+```
+
+## Error Handling
+
+### Rotation-Related Errors
+
+| Error Code | Description | Solution |
+|------------|-------------|----------|
+| `400` | Invalid rotation policy | Use standard, aggressive, or super-aggressive |
+| `404` | Endpoint not found | Verify endpoint ID |
+| `409` | Rotation in progress | Wait for rotation to complete |
+
+### Example Error Response
+
+```json
+{
+  "error": "rotation_in_progress",
+  "message": "Endpoint rotation is currently in progress",
+  "estimatedCompletion": "2024-01-01T00:05:00Z"
+}
+```
+
+## Performance Impact
+
+### Rotation Overhead
+
+| Policy | CPU Overhead | Memory Overhead | Network Overhead |
+|--------|--------------|-----------------|------------------|
+| Standard | Low | Low | Low |
+| Aggressive | Medium | Medium | Medium |
+| Super Aggressive | High | High | High |
+
+### Optimization Tips
+
+1. **Use appropriate policies** - Don't over-rotate for simple APIs
+2. **Monitor performance** - Watch for increased latency
+3. **Cache effectively** - Reduce API calls for alias lookups
+4. **Batch operations** - Group endpoint updates when possible
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Endpoints"
+    href="/ghost/endpoints"
+    icon="route"
+  >
+    Learn about endpoint management
+  </Card>
+  <Card
+    title="Metrics"
+    href="/ghost/metrics"
+    icon="bar-chart"
+  >
+    Monitor rotation performance
+  </Card>
+</CardGroup> 

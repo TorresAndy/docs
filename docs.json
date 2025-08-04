@@ -18,36 +18,65 @@
         ]
       },
       {
-        "group": "Guides",
+        "group": "Products",
         "pages": [
-          "guides/getting-started",
-          "guides/api-keys",
-          "guides/rsa-keys",
-          "guides/security",
-          "guides/security-best-practices"
+          "products/shield",
+          "products/ghost"
         ]
       },
       {
-        "group": "API Reference",
+        "group": "Shield - Field Encryption",
         "pages": [
-          "api-reference/authentication",
-          "api-reference/encryption",
-          "api-reference/decryption",
-          "api-reference/manifests",
-          "api-reference/customers"
-          
+          "shield/overview",
+          "shield/getting-started",
+          "shield/api-reference",
+          "shield/encryption",
+          "shield/decryption",
+          "shield/manifests",
+          "shield/rsa-keys"
+        ]
+      },
+      {
+        "group": "Ghost - API Protection",
+        "pages": [
+          "ghost/overview",
+          "ghost/getting-started",
+          "ghost/api-reference",
+          "ghost/endpoints",
+          "ghost/aliases",
+          "ghost/metrics",
+          "ghost/key-rotation"
+        ]
+      },
+      {
+        "group": "Global Features",
+        "pages": [
+          "global/api-keys",
+          "global/authentication",
+          "global/billing",
+          "global/plans",
+          "global/request-limits",
+          "global/support"
+        ]
+      },
+      {
+        "group": "Guides",
+        "pages": [
+          "guides/security",
+          "guides/security-best-practices",
+          "guides/compliance",
+          "guides/sdks"
         ]
       }
-     
     ]
   },
   "global": {
     "anchors": [
-             {
-         "anchor": "Dashboard",
-         "href": "https://cryptolay.com.br/dashboard",
-         "icon": "globe"
-       },
+      {
+        "anchor": "Dashboard",
+        "href": "https://app.cryptolay.com.br/",
+        "icon": "globe"
+      },
       {
         "anchor": "Documentation",
         "href": "https://docs.cryptolay.com.br/",
@@ -84,11 +113,11 @@
       "label": "Get Started",
       "href": "https://cryptolay.com.br/signup"
     },
-         "secondary": {
-       "type": "button",
-       "label": "Sign In",
-       "href": "https://cryptolay.com.br/login"
-     }
+    "secondary": {
+      "type": "button",
+      "label": "Sign In",
+      "href": "https://cryptolay.com.br/login"
+    }
   },
   "footer": {
     "socials": {

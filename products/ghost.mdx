@@ -1,0 +1,193 @@
+---
+title: 'CryptoLay Ghost'
+description: 'API endpoint obfuscation and protection'
+---
+
+# CryptoLay Ghost
+
+CryptoLay Ghost hides your real API endpoints behind encrypted, rotating paths. Prevent API abuse, reconnaissance, and unauthorized access with intelligent endpoint obfuscation.
+
+## What is Ghost?
+
+Ghost is an API protection service that obfuscates your real endpoints behind encrypted, rotating paths. It prevents attackers from mapping your API structure and stops unauthorized access attempts.
+
+### Key Features
+
+<CardGroup cols={3}>
+  <Card
+    title="Endpoint Obfuscation"
+    icon="route"
+  >
+    Hide your real API endpoints behind encrypted paths
+  </Card>
+  <Card
+    title="Auto-Rotation"
+    icon="rotate-ccw"
+  >
+    Automatically rotate endpoint paths to prevent abuse
+  </Card>
+  <Card
+    title="Traffic Analysis"
+    icon="eye"
+  >
+    Monitor and analyze proxy traffic patterns
+  </Card>
+</CardGroup>
+
+## How It Works
+
+### 1. Create a Manifest
+
+Define your endpoint mappings and rotation rules:
+
+```json
+{
+  "name": "API Protection Manifest",
+  "endpoints": {
+    "/api/v1/users/login": {
+      "alias": "/e9k1zv",
+      "rotation": "standard"
+    },
+    "/api/v1/payments/process": {
+      "alias": "/x7m2qw",
+      "rotation": "aggressive"
+    }
+  }
+}
+```
+
+### 2. Generate Rotating Paths
+
+Ghost automatically generates encrypted paths for your endpoints:
+
+```javascript
+// Real endpoint
+POST /api/v1/users/login
+
+// Ghost proxy endpoint
+POST /e9k1zv
+
+// Auto-rotated after 24h
+POST /x7m2qw
+```
+
+### 3. Route Traffic
+
+Proxy forwards requests to your real endpoints:
+
+```javascript
+// Client makes request to Ghost endpoint
+const response = await fetch('https://ghost.cryptolay.com.br/e9k1zv', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-API-Key': 'your_api_key'
+  },
+  body: JSON.stringify({
+    email: 'user@example.com',
+    password: 'password123'
+  })
+});
+
+// Ghost forwards to your real endpoint
+// POST /api/v1/users/login
+```
+
+### 4. Monitor & Analyze
+
+Track usage, detect abuse, and optimize performance:
+
+```javascript
+// Get metrics for your endpoints
+const metrics = await fetch('https://api.cryptolay.com.br/api/ghost/metrics', {
+  headers: {
+    'X-API-Key': 'your_api_key'
+  }
+});
+```
+
+## Rotation Policies
+
+### Standard Rotation
+- **Frequency**: Every 24 hours
+- **Use Case**: General API protection
+- **Overhead**: Low
+- **Protection**: Basic
+
+### Aggressive Rotation
+- **Frequency**: Every 6 hours
+- **Use Case**: High-security applications
+- **Overhead**: Medium
+- **Protection**: Enhanced
+
+### Super Aggressive Rotation
+- **Frequency**: Every hour
+- **Use Case**: Maximum security requirements
+- **Overhead**: Higher
+- **Protection**: Maximum
+
+## Use Cases
+
+### Mobile APIs
+
+Protect mobile app endpoints from reverse engineering:
+
+```javascript
+// Mobile app uses Ghost endpoint
+const loginResponse = await fetch('https://ghost.cryptolay.com.br/e9k1zv', {
+  method: 'POST',
+  body: JSON.stringify({
+    email: userEmail,
+    password: userPassword
+  })
+});
+```
+
+### Anti-Reconnaissance
+
+Prevent attackers from mapping your API structure:
+
+```javascript
+// Real endpoints are hidden
+// /api/v1/users/login → /e9k1zv
+// /api/v1/payments/process → /x7m2qw
+// /api/v1/admin/users → /y8n3rx
+```
+
+### Abuse Prevention
+
+Stop API abuse and unauthorized access attempts:
+
+```javascript
+// Rate limiting with path rotation
+// Each rotation resets rate limits
+// Makes abuse patterns harder to detect
+```
+
+## Security Features
+
+- **Endpoint Obfuscation** - Hide real API structure
+- **Path Rotation** - Automatic endpoint path changes
+- **Rate Limiting** - Advanced rate limiting with rotation
+- **Traffic Analysis** - Monitor and detect abuse
+- **DDoS Protection** - Built-in protection against attacks
+- **Global CDN** - Distributed proxy nodes for low latency
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Get Started"
+    href="/ghost/getting-started"
+    icon="rocket"
+  >
+    Start protecting your APIs in 5 minutes
+  </Card>
+  <Card
+    title="API Reference"
+    href="/ghost/api-reference"
+    icon="code"
+  >
+    Explore the complete Ghost API
+  </Card>
+</CardGroup> 

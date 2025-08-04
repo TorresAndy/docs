@@ -1,0 +1,591 @@
+---
+title: 'Ghost Metrics'
+description: 'Monitor and analyze proxy traffic patterns'
+---
+
+# Ghost Metrics
+
+Ghost provides comprehensive metrics and analytics to help you monitor proxy traffic, detect abuse, and optimize performance. Track usage patterns, response times, and security events in real-time.
+
+## Overview
+
+Ghost metrics help you understand:
+- **Traffic patterns** - How your endpoints are being used
+- **Performance** - Response times and throughput
+- **Security** - Abuse attempts and suspicious activity
+- **Usage** - Request volumes and rate limits
+
+## Getting Metrics
+
+### Get All Metrics
+
+Retrieve comprehensive metrics for your account:
+
+<RequestExample>
+```bash
+curl -X GET https://api.cryptolay.com.br/api/ghost/metrics \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "summary": {
+    "totalRequests": 15420,
+    "totalErrors": 123,
+    "avgResponseTime": 45,
+    "abuseAttempts": 15,
+    "activeEndpoints": 8
+  },
+  "endpoints": {
+    "/e9k1zv": {
+      "requests": 1250,
+      "errors": 12,
+      "avgResponseTime": 45,
+      "abuseAttempts": 3,
+      "lastRequest": "2024-01-15T10:30:00Z"
+    },
+    "/x7m2qw": {
+      "requests": 980,
+      "errors": 8,
+      "avgResponseTime": 52,
+      "abuseAttempts": 2,
+      "lastRequest": "2024-01-15T10:25:00Z"
+    }
+  },
+  "timeSeries": {
+    "requests": [
+      {"timestamp": "2024-01-15T10:00:00Z", "value": 150},
+      {"timestamp": "2024-01-15T10:05:00Z", "value": 180},
+      {"timestamp": "2024-01-15T10:10:00Z", "value": 165}
+    ]
+  }
+}
+```
+</ResponseExample>
+
+### Get Endpoint Metrics
+
+Get detailed metrics for a specific endpoint:
+
+<RequestExample>
+```bash
+curl -X GET https://api.cryptolay.com.br/api/ghost/endpoints/endpoint-uuid-123/metrics \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "endpointId": "endpoint-uuid-123",
+  "realEndpoint": "/api/v1/users/login",
+  "alias": "/e9k1zv",
+  "metrics": {
+    "requests": {
+      "total": 1250,
+      "today": 150,
+      "thisHour": 25
+    },
+    "errors": {
+      "total": 12,
+      "rate": 0.96,
+      "types": {
+        "rate_limit_exceeded": 8,
+        "invalid_request": 3,
+        "server_error": 1
+      }
+    },
+    "performance": {
+      "avgResponseTime": 45,
+      "p95ResponseTime": 120,
+      "p99ResponseTime": 250
+    },
+    "security": {
+      "abuseAttempts": 3,
+      "suspiciousIPs": 2,
+      "blockedRequests": 5
+    },
+    "geography": {
+      "topCountries": [
+        {"country": "US", "requests": 800},
+        {"country": "BR", "requests": 300},
+        {"country": "CA", "requests": 150}
+      ]
+    }
+  }
+}
+```
+</ResponseExample>
+
+## Metric Types
+
+### Request Metrics
+
+Track request volume and patterns:
+
+```javascript
+{
+  "requests": {
+    "total": 1250,           // Total requests
+    "today": 150,            // Requests today
+    "thisHour": 25,          // Requests this hour
+    "thisMinute": 2,         // Requests this minute
+    "byMethod": {
+      "GET": 800,
+      "POST": 400,
+      "PUT": 50
+    },
+    "byStatus": {
+      "200": 1200,
+      "404": 30,
+      "429": 20
+    }
+  }
+}
+```
+
+### Error Metrics
+
+Monitor error rates and types:
+
+```javascript
+{
+  "errors": {
+    "total": 12,
+    "rate": 0.96,            // Error rate percentage
+    "types": {
+      "rate_limit_exceeded": 8,
+      "invalid_request": 3,
+      "server_error": 1,
+      "authentication_failed": 0
+    },
+    "trends": {
+      "lastHour": 2,
+      "lastDay": 8,
+      "lastWeek": 45
+    }
+  }
+}
+```
+
+### Performance Metrics
+
+Track response times and throughput:
+
+```javascript
+{
+  "performance": {
+    "avgResponseTime": 45,    // Average response time (ms)
+    "p50ResponseTime": 35,    // 50th percentile
+    "p95ResponseTime": 120,   // 95th percentile
+    "p99ResponseTime": 250,   // 99th percentile
+    "maxResponseTime": 500,   // Maximum response time
+    "throughput": {
+      "requestsPerSecond": 25,
+      "bytesPerSecond": 1024000
+    }
+  }
+}
+```
+
+### Security Metrics
+
+Monitor security events and abuse:
+
+```javascript
+{
+  "security": {
+    "abuseAttempts": 3,      // Number of abuse attempts
+    "suspiciousIPs": 2,      // Suspicious IP addresses
+    "blockedRequests": 5,     // Blocked requests
+    "ddosEvents": 0,         // DDoS events
+    "geographicAnomalies": 1, // Geographic anomalies
+    "rateLimitViolations": 8  // Rate limit violations
+  }
+}
+```
+
+## Time Series Data
+
+### Get Time Series Metrics
+
+Retrieve metrics over time:
+
+<RequestExample>
+```bash
+curl -X GET "https://api.cryptolay.com.br/api/ghost/metrics/timeseries?start=2024-01-15T00:00:00Z&end=2024-01-15T23:59:59Z&interval=1h" \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "timeSeries": {
+    "requests": [
+      {
+        "timestamp": "2024-01-15T00:00:00Z",
+        "value": 150,
+        "endpoint": "/e9k1zv"
+      },
+      {
+        "timestamp": "2024-01-15T01:00:00Z",
+        "value": 180,
+        "endpoint": "/e9k1zv"
+      }
+    ],
+    "errors": [
+      {
+        "timestamp": "2024-01-15T00:00:00Z",
+        "value": 2,
+        "type": "rate_limit_exceeded"
+      }
+    ],
+    "responseTime": [
+      {
+        "timestamp": "2024-01-15T00:00:00Z",
+        "avg": 45,
+        "p95": 120,
+        "p99": 250
+      }
+    ]
+  }
+}
+```
+</ResponseExample>
+
+### Time Intervals
+
+Available time intervals:
+- `1m` - 1 minute intervals
+- `5m` - 5 minute intervals
+- `15m` - 15 minute intervals
+- `1h` - 1 hour intervals
+- `1d` - 1 day intervals
+
+## Geographic Analytics
+
+### Get Geographic Metrics
+
+Analyze traffic by geographic location:
+
+<RequestExample>
+```bash
+curl -X GET https://api.cryptolay.com.br/api/ghost/metrics/geography \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "geography": {
+    "topCountries": [
+      {
+        "country": "US",
+        "requests": 800,
+        "percentage": 64.0,
+        "avgResponseTime": 42
+      },
+      {
+        "country": "BR",
+        "requests": 300,
+        "percentage": 24.0,
+        "avgResponseTime": 48
+      },
+      {
+        "country": "CA",
+        "requests": 150,
+        "percentage": 12.0,
+        "avgResponseTime": 45
+      }
+    ],
+    "topCities": [
+      {
+        "city": "New York",
+        "country": "US",
+        "requests": 400,
+        "avgResponseTime": 40
+      },
+      {
+        "city": "São Paulo",
+        "country": "BR",
+        "requests": 200,
+        "avgResponseTime": 50
+      }
+    ],
+    "anomalies": [
+      {
+        "location": "Unknown",
+        "requests": 50,
+        "suspicious": true
+      }
+    ]
+  }
+}
+```
+</ResponseExample>
+
+## Abuse Detection
+
+### Get Abuse Metrics
+
+Monitor security events and abuse attempts:
+
+<RequestExample>
+```bash
+curl -X GET https://api.cryptolay.com.br/api/ghost/metrics/abuse \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "abuse": {
+    "attempts": 15,
+    "blockedIPs": 8,
+    "suspiciousPatterns": 3,
+    "recentEvents": [
+      {
+        "timestamp": "2024-01-15T10:30:00Z",
+        "type": "rate_limit_violation",
+        "ip": "192.168.1.100",
+        "endpoint": "/e9k1zv",
+        "details": "Exceeded rate limit by 500%"
+      },
+      {
+        "timestamp": "2024-01-15T10:25:00Z",
+        "type": "suspicious_pattern",
+        "ip": "10.0.0.50",
+        "endpoint": "/x7m2qw",
+        "details": "Unusual request pattern detected"
+      }
+    ],
+    "trends": {
+      "lastHour": 2,
+      "lastDay": 8,
+      "lastWeek": 45
+    }
+  }
+}
+```
+</ResponseExample>
+
+## Real-Time Monitoring
+
+### Webhook Notifications
+
+Set up webhooks for real-time alerts:
+
+<RequestExample>
+```bash
+curl -X POST https://api.cryptolay.com.br/api/ghost/webhooks \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{
+    "url": "https://your-app.com/ghost-webhook",
+    "events": ["abuse", "high_usage", "errors"],
+    "secret": "webhook_secret_123"
+  }'
+```
+</RequestExample>
+
+### Webhook Events
+
+Available webhook events:
+- `abuse` - Abuse attempts detected
+- `high_usage` - Unusual traffic spikes
+- `errors` - Error rate thresholds exceeded
+- `rotation` - Endpoint alias rotations
+- `rate_limit` - Rate limit violations
+
+### Example Webhook Payload
+
+```json
+{
+  "event": "abuse",
+  "timestamp": "2024-01-15T10:30:00Z",
+  "data": {
+    "type": "rate_limit_violation",
+    "ip": "192.168.1.100",
+    "endpoint": "/e9k1zv",
+    "details": "Exceeded rate limit by 500%"
+  }
+}
+```
+
+## Dashboard Integration
+
+### Embedding Metrics
+
+Embed metrics in your dashboard:
+
+```javascript
+// Get metrics for dashboard
+const getDashboardMetrics = async () => {
+  const response = await fetch('https://api.cryptolay.com.br/api/ghost/metrics/dashboard', {
+    headers: {
+      'X-API-Key': 'your_api_key'
+    }
+  });
+  
+  return response.json();
+};
+
+// Example dashboard data
+{
+  "summary": {
+    "totalRequests": 15420,
+    "errorRate": 0.8,
+    "avgResponseTime": 45,
+    "activeEndpoints": 8
+  },
+  "charts": {
+    "requests": [...],
+    "errors": [...],
+    "responseTime": [...]
+  }
+}
+```
+
+### Chart Types
+
+Available chart types:
+- **Line charts** - Time series data
+- **Bar charts** - Categorical data
+- **Pie charts** - Distribution data
+- **Heatmaps** - Geographic data
+
+## Best Practices
+
+### Monitoring Strategy
+
+#### Set Up Alerts
+
+```javascript
+// Monitor error rates
+if (metrics.errors.rate > 5.0) {
+  await sendAlert('High error rate detected');
+}
+
+// Monitor response times
+if (metrics.performance.avgResponseTime > 200) {
+  await sendAlert('High response time detected');
+}
+
+// Monitor abuse
+if (metrics.security.abuseAttempts > 10) {
+  await sendAlert('High abuse attempts detected');
+}
+```
+
+#### Track Key Metrics
+
+```javascript
+// Key metrics to monitor
+const keyMetrics = [
+  'requests.total',
+  'errors.rate',
+  'performance.avgResponseTime',
+  'security.abuseAttempts'
+];
+
+// Set up monitoring
+keyMetrics.forEach(metric => {
+  monitorMetric(metric, (value) => {
+    if (isThresholdExceeded(metric, value)) {
+      sendAlert(`${metric} threshold exceeded: ${value}`);
+    }
+  });
+});
+```
+
+### Performance Optimization
+
+#### Cache Metrics
+
+```javascript
+// Cache metrics to reduce API calls
+const metricsCache = new Map();
+
+const getCachedMetrics = async () => {
+  if (metricsCache.has('summary')) {
+    const cached = metricsCache.get('summary');
+    if (Date.now() - cached.timestamp < 60000) { // 1 minute cache
+      return cached.data;
+    }
+  }
+  
+  const metrics = await fetchMetrics();
+  metricsCache.set('summary', {
+    data: metrics,
+    timestamp: Date.now()
+  });
+  
+  return metrics;
+};
+```
+
+#### Batch Requests
+
+```javascript
+// Batch multiple metric requests
+const getBatchMetrics = async (endpointIds) => {
+  const response = await fetch('https://api.cryptolay.com.br/api/ghost/metrics/batch', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-Key': 'your_api_key'
+    },
+    body: JSON.stringify({
+      endpointIds: endpointIds
+    })
+  });
+  
+  return response.json();
+};
+```
+
+## Error Handling
+
+### Common Metric Errors
+
+| Error Code | Description | Solution |
+|------------|-------------|----------|
+| `400` | Invalid time range | Check start/end dates |
+| `404` | Endpoint not found | Verify endpoint ID |
+| `429` | Rate limit exceeded | Wait or increase limits |
+| `403` | Access denied | Check API key permissions |
+
+### Example Error Response
+
+```json
+{
+  "error": "invalid_time_range",
+  "message": "Time range exceeds maximum allowed period",
+  "maxPeriod": "30 days",
+  "requestedPeriod": "90 days"
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Endpoints"
+    href="/ghost/endpoints"
+    icon="route"
+  >
+    Learn about endpoint management
+  </Card>
+  <Card
+    title="Key Rotation"
+    href="/ghost/key-rotation"
+    icon="rotate-ccw"
+  >
+    Understand rotation policies
+  </Card>
+</CardGroup> 

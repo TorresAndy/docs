@@ -1,0 +1,366 @@
+---
+title: 'Ghost Endpoints'
+description: 'Manage endpoint mappings and aliases for API protection'
+---
+
+# Ghost Endpoints
+
+Ghost endpoints allow you to map your real API endpoints to obfuscated, rotating paths. This prevents attackers from discovering your API structure and provides additional security through path rotation.
+
+## Creating Endpoints
+
+### Create Endpoint Mapping
+
+Map a real endpoint to a Ghost alias:
+
+<RequestExample>
+```bash
+curl -X POST https://api.cryptolay.com.br/api/ghost/endpoints \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{
+    "realEndpoint": "/api/v1/users/login",
+    "alias": "/e9k1zv",
+    "rotation": "standard",
+    "rateLimit": {
+      "requests": 100,
+      "window": "1m"
+    },
+    "description": "User login endpoint"
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "id": "endpoint-uuid-123",
+  "realEndpoint": "/api/v1/users/login",
+  "alias": "/e9k1zv",
+  "rotation": "standard",
+  "rateLimit": {
+    "requests": 100,
+    "window": "1m"
+  },
+  "description": "User login endpoint",
+  "status": "active",
+  "createdAt": "2024-01-01T00:00:00Z",
+  "nextRotation": "2024-01-02T00:00:00Z"
+}
+```
+</ResponseExample>
+
+### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `realEndpoint` | string | Yes | The real API endpoint path |
+| `alias` | string | No | Custom alias (auto-generated if not provided) |
+| `rotation` | string | No | Rotation policy (standard, aggressive, super-aggressive) |
+| `rateLimit` | object | No | Rate limiting configuration |
+| `description` | string | No | Optional description |
+
+### Rotation Policies
+
+#### Standard Rotation
+- **Frequency**: Every 24 hours
+- **Use Case**: General API protection
+- **Overhead**: Low
+
+```json
+{
+  "rotation": "standard"
+}
+```
+
+#### Aggressive Rotation
+- **Frequency**: Every 6 hours
+- **Use Case**: High-security applications
+- **Overhead**: Medium
+
+```json
+{
+  "rotation": "aggressive"
+}
+```
+
+#### Super Aggressive Rotation
+- **Frequency**: Every hour
+- **Use Case**: Maximum security requirements
+- **Overhead**: Higher
+
+```json
+{
+  "rotation": "super-aggressive"
+}
+```
+
+## Managing Endpoints
+
+### List Endpoints
+
+Get all endpoint mappings for your account:
+
+<RequestExample>
+```bash
+curl -X GET https://api.cryptolay.com.br/api/ghost/endpoints \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "endpoints": [
+    {
+      "id": "endpoint-uuid-123",
+      "realEndpoint": "/api/v1/users/login",
+      "alias": "/e9k1zv",
+      "rotation": "standard",
+      "rateLimit": {
+        "requests": 100,
+        "window": "1m"
+      },
+      "description": "User login endpoint",
+      "status": "active",
+      "createdAt": "2024-01-01T00:00:00Z",
+      "nextRotation": "2024-01-02T00:00:00Z"
+    },
+    {
+      "id": "endpoint-uuid-456",
+      "realEndpoint": "/api/v1/payments/process",
+      "alias": "/x7m2qw",
+      "rotation": "aggressive",
+      "rateLimit": {
+        "requests": 50,
+        "window": "1m"
+      },
+      "description": "Payment processing endpoint",
+      "status": "active",
+      "createdAt": "2024-01-01T00:00:00Z",
+      "nextRotation": "2024-01-01T06:00:00Z"
+    }
+  ]
+}
+```
+</ResponseExample>
+
+### Get Endpoint
+
+Get details for a specific endpoint:
+
+<RequestExample>
+```bash
+curl -X GET https://api.cryptolay.com.br/api/ghost/endpoints/endpoint-uuid-123 \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "id": "endpoint-uuid-123",
+  "realEndpoint": "/api/v1/users/login",
+  "alias": "/e9k1zv",
+  "rotation": "standard",
+  "rateLimit": {
+    "requests": 100,
+    "window": "1m"
+  },
+  "description": "User login endpoint",
+  "status": "active",
+  "createdAt": "2024-01-01T00:00:00Z",
+  "nextRotation": "2024-01-02T00:00:00Z",
+  "metrics": {
+    "totalRequests": 1250,
+    "errors": 12,
+    "avgResponseTime": 45,
+    "abuseAttempts": 3
+  }
+}
+```
+</ResponseExample>
+
+### Update Endpoint
+
+Update endpoint configuration:
+
+<RequestExample>
+```bash
+curl -X PUT https://api.cryptolay.com.br/api/ghost/endpoints/endpoint-uuid-123 \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{
+    "rotation": "aggressive",
+    "rateLimit": {
+      "requests": 200,
+      "window": "1m"
+    },
+    "description": "Updated user login endpoint"
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "id": "endpoint-uuid-123",
+  "realEndpoint": "/api/v1/users/login",
+  "alias": "/e9k1zv",
+  "rotation": "aggressive",
+  "rateLimit": {
+    "requests": 200,
+    "window": "1m"
+  },
+  "description": "Updated user login endpoint",
+  "status": "active",
+  "updatedAt": "2024-01-01T12:00:00Z",
+  "nextRotation": "2024-01-01T18:00:00Z"
+}
+```
+</ResponseExample>
+
+### Delete Endpoint
+
+Remove an endpoint mapping:
+
+<RequestExample>
+```bash
+curl -X DELETE https://api.cryptolay.com.br/api/ghost/endpoints/endpoint-uuid-123 \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "message": "Endpoint deleted successfully",
+  "id": "endpoint-uuid-123"
+}
+```
+</ResponseExample>
+
+## Using Endpoints
+
+### Making Requests
+
+Once you have endpoint mappings, clients can make requests to the Ghost aliases:
+
+```javascript
+// Instead of calling your real endpoint
+// POST /api/v1/users/login
+
+// Call the Ghost alias
+const response = await fetch('https://ghost.cryptolay.com.br/e9k1zv', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-API-Key': 'your_api_key'
+  },
+  body: JSON.stringify({
+    email: 'user@example.com',
+    password: 'password123'
+  })
+});
+```
+
+### Handling Rotations
+
+Ghost automatically rotates endpoint aliases based on the configured policy:
+
+```javascript
+// Initial alias
+POST /e9k1zv
+
+// After rotation (depends on policy)
+POST /a1b2c3
+
+// Your application doesn't need to change
+// Ghost handles the mapping automatically
+```
+
+### Rate Limiting
+
+Each endpoint can have its own rate limiting configuration:
+
+```json
+{
+  "rateLimit": {
+    "requests": 100,
+    "window": "1m",
+    "burst": 10
+  }
+}
+```
+
+- **requests**: Maximum requests per window
+- **window**: Time window (1m, 5m, 15m, 1h)
+- **burst**: Maximum burst requests
+
+## Best Practices
+
+### Endpoint Naming
+
+- Use descriptive real endpoint paths
+- Let Ghost auto-generate aliases for security
+- Avoid predictable patterns in aliases
+
+### Rotation Policies
+
+- Use **standard** for general APIs
+- Use **aggressive** for sensitive data
+- Use **super-aggressive** for critical systems
+
+### Rate Limiting
+
+- Set appropriate limits based on your API usage
+- Monitor abuse attempts and adjust accordingly
+- Consider different limits for different endpoints
+
+### Security
+
+- Never expose real endpoint paths in client code
+- Use different API keys for different environments
+- Monitor endpoint usage for suspicious activity
+
+## Error Handling
+
+### Common Errors
+
+| Error Code | Description | Solution |
+|------------|-------------|----------|
+| `400` | Invalid endpoint configuration | Check request parameters |
+| `404` | Endpoint not found | Verify endpoint ID |
+| `429` | Rate limit exceeded | Wait or increase limits |
+| `403` | Access denied | Check API key permissions |
+
+### Example Error Response
+
+```json
+{
+  "error": "rate_limit_exceeded",
+  "message": "Rate limit exceeded for endpoint /e9k1zv",
+  "retryAfter": 60,
+  "limit": 100,
+  "window": "1m"
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Aliases"
+    href="/ghost/aliases"
+    icon="link"
+  >
+    Learn about endpoint aliases
+  </Card>
+  <Card
+    title="Metrics"
+    href="/ghost/metrics"
+    icon="bar-chart"
+  >
+    Monitor endpoint performance
+  </Card>
+</CardGroup> 

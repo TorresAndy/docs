@@ -1,0 +1,477 @@
+---
+title: 'Ghost Aliases'
+description: 'Understanding and managing endpoint aliases'
+---
+
+# Ghost Aliases
+
+Ghost aliases are encrypted, rotating paths that hide your real API endpoints. They provide security through obfuscation and automatically rotate to prevent abuse.
+
+## What are Aliases?
+
+Aliases are short, encrypted paths that map to your real API endpoints. Instead of exposing your actual endpoint structure, clients use these aliases to make requests.
+
+### Example
+
+```javascript
+// Real endpoint (hidden from clients)
+POST /api/v1/users/login
+
+// Ghost alias (what clients use)
+POST /e9k1zv
+
+// After rotation
+POST /a1b2c3
+```
+
+## Creating Aliases
+
+### Auto-Generated Aliases
+
+When you create an endpoint, Ghost automatically generates a secure alias:
+
+<RequestExample>
+```bash
+curl -X POST https://api.cryptolay.com.br/api/ghost/endpoints \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{
+    "realEndpoint": "/api/v1/users/login",
+    "description": "User login endpoint"
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "id": "endpoint-uuid-123",
+  "realEndpoint": "/api/v1/users/login",
+  "alias": "/e9k1zv",
+  "rotation": "standard",
+  "status": "active",
+  "createdAt": "2024-01-01T00:00:00Z"
+}
+```
+</ResponseExample>
+
+### Custom Aliases
+
+You can specify a custom alias if needed:
+
+<RequestExample>
+```bash
+curl -X POST https://api.cryptolay.com.br/api/ghost/endpoints \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{
+    "realEndpoint": "/api/v1/users/login",
+    "alias": "/login",
+    "description": "User login endpoint"
+  }'
+```
+</RequestExample>
+
+**Note**: Custom aliases are less secure than auto-generated ones. Use them only when necessary.
+
+## Alias Generation
+
+### Algorithm
+
+Ghost generates aliases using AES-256 encryption:
+
+```javascript
+// Alias generation algorithm
+const generateAlias = (realEndpoint, timestamp, secretKey) => {
+  const input = realEndpoint + timestamp + secretKey;
+  const encrypted = aes256.encrypt(input);
+  return encrypted.substring(0, 6); // 6-character alias
+};
+```
+
+### Characteristics
+
+- **Length**: 6 characters by default
+- **Characters**: Alphanumeric (a-z, 0-9)
+- **Uniqueness**: Guaranteed within your account
+- **Security**: Cryptographically secure
+
+### Example Aliases
+
+```javascript
+// Generated aliases examples
+"/e9k1zv"  // Auto-generated
+"/a1b2c3"  // After rotation
+"/x7m2qw"  // Another rotation
+"/y8n3rx"  // Yet another rotation
+```
+
+## Using Aliases
+
+### Making Requests
+
+Clients use aliases instead of real endpoints:
+
+```javascript
+// Instead of calling the real endpoint
+// POST https://api.example.com/api/v1/users/login
+
+// Call the Ghost alias
+const response = await fetch('https://ghost.cryptolay.com.br/e9k1zv', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-API-Key': 'your_api_key'
+  },
+  body: JSON.stringify({
+    email: 'user@example.com',
+    password: 'password123'
+  })
+});
+```
+
+### Getting Current Aliases
+
+Retrieve current aliases for your endpoints:
+
+<RequestExample>
+```bash
+curl -X GET https://api.cryptolay.com.br/api/ghost/endpoints \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "endpoints": [
+    {
+      "id": "endpoint-uuid-123",
+      "realEndpoint": "/api/v1/users/login",
+      "alias": "/e9k1zv",
+      "rotation": "standard",
+      "nextRotation": "2024-01-02T00:00:00Z"
+    },
+    {
+      "id": "endpoint-uuid-456",
+      "realEndpoint": "/api/v1/payments/process",
+      "alias": "/x7m2qw",
+      "rotation": "aggressive",
+      "nextRotation": "2024-01-01T06:00:00Z"
+    }
+  ]
+}
+```
+</ResponseExample>
+
+## Alias Rotation
+
+### Automatic Rotation
+
+Aliases automatically rotate based on the configured policy:
+
+```javascript
+// Standard rotation (24h)
+// Day 1: POST /e9k1zv
+// Day 2: POST /a1b2c3
+// Day 3: POST /x7m2qw
+
+// Aggressive rotation (6h)
+// 00:00-06:00: POST /e9k1zv
+// 06:00-12:00: POST /a1b2c3
+// 12:00-18:00: POST /x7m2qw
+// 18:00-00:00: POST /y8n3rx
+
+// Super aggressive rotation (1h)
+// 00:00-01:00: POST /e9k1zv
+// 01:00-02:00: POST /a1b2c3
+// 02:00-03:00: POST /x7m2qw
+// ... continues every hour
+```
+
+### Rotation Timing
+
+Rotations occur at specific intervals:
+
+- **Standard**: Every 24 hours at 00:00 UTC
+- **Aggressive**: Every 6 hours (00:00, 06:00, 12:00, 18:00 UTC)
+- **Super Aggressive**: Every hour on the hour
+
+### Handling Rotations
+
+Clients should handle rotation gracefully:
+
+```javascript
+// Good: Get current alias from API
+const getCurrentAlias = async (endpointId) => {
+  const response = await fetch(`/api/ghost/endpoints/${endpointId}`);
+  const endpoint = await response.json();
+  return endpoint.alias;
+};
+
+// Use current alias
+const alias = await getCurrentAlias('endpoint-uuid-123');
+const response = await fetch(`https://ghost.cryptolay.com.br${alias}`, {
+  method: 'POST',
+  body: JSON.stringify(data)
+});
+```
+
+## Managing Aliases
+
+### List All Aliases
+
+Get all current aliases for your account:
+
+<RequestExample>
+```bash
+curl -X GET https://api.cryptolay.com.br/api/ghost/aliases \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "aliases": [
+    {
+      "endpointId": "endpoint-uuid-123",
+      "realEndpoint": "/api/v1/users/login",
+      "alias": "/e9k1zv",
+      "rotation": "standard",
+      "nextRotation": "2024-01-02T00:00:00Z"
+    },
+    {
+      "endpointId": "endpoint-uuid-456",
+      "realEndpoint": "/api/v1/payments/process",
+      "alias": "/x7m2qw",
+      "rotation": "aggressive",
+      "nextRotation": "2024-01-01T06:00:00Z"
+    }
+  ]
+}
+```
+</ResponseExample>
+
+### Get Alias History
+
+View alias rotation history:
+
+<RequestExample>
+```bash
+curl -X GET https://api.cryptolay.com.br/api/ghost/endpoints/endpoint-uuid-123/aliases \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "aliases": [
+    {
+      "alias": "/e9k1zv",
+      "active": true,
+      "createdAt": "2024-01-01T00:00:00Z",
+      "expiresAt": "2024-01-02T00:00:00Z"
+    },
+    {
+      "alias": "/x7m2qw",
+      "active": false,
+      "createdAt": "2023-12-31T00:00:00Z",
+      "expiresAt": "2024-01-01T00:00:00Z"
+    },
+    {
+      "alias": "/a1b2c3",
+      "active": false,
+      "createdAt": "2023-12-30T00:00:00Z",
+      "expiresAt": "2023-12-31T00:00:00Z"
+    }
+  ]
+}
+```
+</ResponseExample>
+
+### Force Rotation
+
+Manually trigger alias rotation (Pro and Enterprise only):
+
+<RequestExample>
+```bash
+curl -X POST https://api.cryptolay.com.br/api/ghost/endpoints/endpoint-uuid-123/rotate \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "message": "Alias rotated successfully",
+  "oldAlias": "/e9k1zv",
+  "newAlias": "/a1b2c3",
+  "nextRotation": "2024-01-02T00:00:00Z"
+}
+```
+</ResponseExample>
+
+## Best Practices
+
+### Security
+
+#### Never Expose Real Endpoints
+
+```javascript
+// Good: Use Ghost aliases
+const loginUrl = 'https://ghost.cryptolay.com.br/e9k1zv';
+
+// Bad: Expose real endpoint
+const loginUrl = 'https://api.example.com/api/v1/users/login';
+```
+
+#### Use Auto-Generated Aliases
+
+```javascript
+// Good: Let Ghost generate secure aliases
+const endpoint = await createEndpoint({
+  realEndpoint: '/api/v1/users/login'
+});
+// Result: /e9k1zv
+
+// Bad: Use predictable custom aliases
+const endpoint = await createEndpoint({
+  realEndpoint: '/api/v1/users/login',
+  alias: '/login' // Too predictable
+});
+```
+
+### Client Implementation
+
+#### Cache Aliases Appropriately
+
+```javascript
+// Cache aliases with appropriate TTL
+const aliasCache = new Map();
+
+const getAlias = async (endpointId) => {
+  if (aliasCache.has(endpointId)) {
+    const cached = aliasCache.get(endpointId);
+    // Cache for 1 hour for aggressive rotation
+    if (Date.now() - cached.timestamp < 3600000) {
+      return cached.alias;
+    }
+  }
+  
+  const alias = await fetchCurrentAlias(endpointId);
+  aliasCache.set(endpointId, {
+    alias,
+    timestamp: Date.now()
+  });
+  
+  return alias;
+};
+```
+
+#### Handle Rotation Gracefully
+
+```javascript
+// Retry with new alias if request fails
+const makeRequest = async (endpointId, data) => {
+  try {
+    const alias = await getAlias(endpointId);
+    return await fetch(`https://ghost.cryptolay.com.br${alias}`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  } catch (error) {
+    if (error.status === 404) {
+      // Alias might have rotated, try again
+      aliasCache.delete(endpointId);
+      const newAlias = await getAlias(endpointId);
+      return await fetch(`https://ghost.cryptolay.com.br${newAlias}`, {
+        method: 'POST',
+        body: JSON.stringify(data)
+      });
+    }
+    throw error;
+  }
+};
+```
+
+### Monitoring
+
+#### Track Alias Usage
+
+```javascript
+// Monitor alias performance
+const aliasMetrics = await fetch('/api/ghost/aliases/metrics');
+console.log(`Alias /e9k1zv used ${aliasMetrics.requests} times`);
+```
+
+#### Set Up Alerts
+
+```javascript
+// Alert on unusual alias usage
+if (aliasMetrics.requests > 10000) {
+  await sendAlert(`High usage detected for alias /e9k1zv`);
+}
+```
+
+## Error Handling
+
+### Common Alias Errors
+
+| Error Code | Description | Solution |
+|------------|-------------|----------|
+| `404` | Alias not found | Check if alias has rotated |
+| `410` | Alias expired | Get current alias from API |
+| `429` | Rate limit exceeded | Wait or increase limits |
+| `403` | Access denied | Check API key permissions |
+
+### Example Error Response
+
+```json
+{
+  "error": "alias_not_found",
+  "message": "Alias /e9k1zv not found or expired",
+  "suggestion": "Get current alias from /api/ghost/endpoints"
+}
+```
+
+## Performance Considerations
+
+### Alias Lookup Overhead
+
+- **Auto-generated**: Minimal overhead
+- **Custom**: Slight additional validation
+- **Rotation**: No impact on request performance
+
+### Caching Strategies
+
+1. **Short TTL**: For aggressive rotation (1-6 hours)
+2. **Medium TTL**: For standard rotation (12-24 hours)
+3. **Long TTL**: For super aggressive rotation (30-60 minutes)
+
+### Optimization Tips
+
+1. **Batch requests** when possible
+2. **Cache aliases** with appropriate TTL
+3. **Monitor performance** and adjust caching
+4. **Use connection pooling** for HTTP requests
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Endpoints"
+    href="/ghost/endpoints"
+    icon="route"
+  >
+    Learn about endpoint management
+  </Card>
+  <Card
+    title="Key Rotation"
+    href="/ghost/key-rotation"
+    icon="rotate-ccw"
+  >
+    Understand rotation policies
+  </Card>
+</CardGroup> 

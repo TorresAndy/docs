@@ -1,0 +1,279 @@
+---
+title: 'Shield Overview'
+description: 'Field-level encryption for JSON payloads'
+---
+
+# Shield Overview
+
+CryptoLay Shield provides field-level encryption for JSON payloads, allowing you to encrypt sensitive data while keeping the rest readable. Perfect for protecting PII, banking data, and authentication tokens.
+
+## What is Shield?
+
+Shield is a stateless, scalable cryptographic gateway that simplifies field-level encryption for applications. Built for developers and organizations requiring compliance with GDPR, LGPD, HIPAA, and PCI-DSS.
+
+### Key Features
+
+<CardGroup cols={3}>
+  <Card
+    title="AES-256-GCM Encryption"
+    icon="shield"
+  >
+    Industry-standard encryption with authenticated encryption
+  </Card>
+  <Card
+    title="Field-Level Control"
+    icon="code"
+  >
+    Encrypt specific fields while keeping others readable
+  </Card>
+  <Card
+    title="JSON Native"
+    icon="database"
+  >
+    Works seamlessly with JSON payloads and responses
+  </Card>
+</CardGroup>
+
+## How It Works
+
+### 1. Create a Manifest
+
+Define which fields should be encrypted in your data:
+
+```json
+{
+  "name": "User Data Manifest",
+  "description": "Encrypts sensitive user information",
+  "encryptionRules": {
+    "fields": {
+      "email": {
+        "encrypted": true,
+        "type": "string"
+      },
+      "phone": {
+        "encrypted": true,
+        "type": "string"
+      },
+      "ssn": {
+        "encrypted": true,
+        "type": "string"
+      },
+      "address": {
+        "encrypted": false,
+        "type": "string"
+      }
+    }
+  }
+}
+```
+
+### 2. Encrypt Your Data
+
+Send your JSON payload to Shield for encryption:
+
+```javascript
+const response = await fetch('https://api.cryptolay.com.br/api/encrypt', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-API-Key': 'your_api_key'
+  },
+  body: JSON.stringify({
+    manifest_id: 'manifest-uuid',
+    data: {
+      user_id: "12345",
+      email: 'user@example.com',
+      phone: '+1234567890',
+      ssn: '123-45-6789',
+      address: '123 Main St'
+    }
+  })
+});
+```
+
+### 3. Store Encrypted Data
+
+Store the encrypted data and metadata securely in your database:
+
+```javascript
+// Response from Shield
+{
+  "data": {
+    "user_id": "12345",
+    "email": "encrypted_field_abc123",
+    "phone": "encrypted_field_def456",
+    "ssn": "encrypted_field_ghi789",
+    "address": "123 Main St"
+  },
+  "meta": {
+    "version": "1.0",
+    "algorithm": "AES-256-GCM",
+    "timestamp": "2024-01-01T00:00:00Z"
+  }
+}
+```
+
+### 4. Decrypt When Needed
+
+Retrieve and decrypt data when required:
+
+```javascript
+const decrypted = await fetch('https://api.cryptolay.com.br/api/decrypt', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-API-Key': 'your_api_key'
+  },
+  body: JSON.stringify({
+    manifest_id: 'manifest-uuid',
+    data: encryptedData,
+    meta: metadata
+  })
+});
+```
+
+## Use Cases
+
+### Healthcare (HIPAA Compliance)
+
+Encrypt patient data to meet HIPAA requirements:
+
+```javascript
+// Encrypt patient information
+const patientData = {
+  name: "John Doe",
+  ssn: "123-45-6789",
+  diagnosis: "Hypertension",
+  medications: ["Lisinopril", "Amlodipine"]
+};
+
+const encrypted = await cryptolay.encrypt({
+  manifestId: 'patient-data-manifest',
+  data: patientData
+});
+```
+
+### Financial Services (PCI-DSS)
+
+Secure payment information:
+
+```javascript
+// Encrypt payment data
+const paymentData = {
+  orderId: "ORD-12345",
+  cardNumber: "4111-1111-1111-1111",
+  cvv: "123",
+  expiryDate: "12/25",
+  amount: 99.99
+};
+
+const encrypted = await cryptolay.encrypt({
+  manifestId: 'payment-data-manifest',
+  data: paymentData
+});
+```
+
+### E-commerce (GDPR Compliance)
+
+Protect customer personal data:
+
+```javascript
+// Encrypt customer information
+const customerData = {
+  customerId: "CUST-12345",
+  email: "customer@example.com",
+  address: "123 Main St",
+  phone: "+1234567890",
+  preferences: {
+    newsletter: true,
+    marketing: false
+  }
+};
+
+const encrypted = await cryptolay.encrypt({
+  manifestId: 'customer-data-manifest',
+  data: customerData
+});
+```
+
+### Authentication & Tokens
+
+Secure authentication data:
+
+```javascript
+// Encrypt sensitive authentication data
+const authData = {
+  sessionId: "SESS-12345",
+  accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  refreshToken: "refresh_token_abc123",
+  permissions: ["read", "write", "admin"]
+};
+
+const encrypted = await cryptolay.encrypt({
+  manifestId: 'auth-data-manifest',
+  data: authData
+});
+```
+
+## Security Features
+
+### Encryption Standards
+
+- **AES-256-GCM** - Industry-standard encryption with authenticated encryption
+- **Key Management** - Secure key management with AWS KMS
+- **Key Rotation** - Automatic key rotation for enhanced security
+
+### Authentication & Authorization
+
+- **API Key Authentication** - Required for all requests
+- **Rate Limiting** - Prevents abuse and ensures fair usage
+- **Request Logging** - Comprehensive audit trail for compliance
+
+### Compliance Ready
+
+- **GDPR Compliance** - Built for European data protection regulations
+- **LGPD Compliance** - Brazilian data protection law compliance
+- **HIPAA Compliance** - Healthcare data protection standards
+- **PCI-DSS Compliance** - Payment card industry security standards
+
+## Architecture
+
+### Stateless Design
+
+Shield operates as a stateless service, meaning:
+- No session state stored on servers
+- Horizontal scaling without data sharing
+- High availability and fault tolerance
+
+### Global Distribution
+
+- **CDN Integration** - Global content delivery network
+- **Edge Computing** - Processing at edge locations
+- **Low Latency** - Sub-10ms response times
+
+### Security Layers
+
+1. **Transport Security** - TLS 1.3 encryption
+2. **API Authentication** - API key validation
+3. **Field Encryption** - AES-256-GCM encryption
+4. **Key Management** - AWS KMS integration
+5. **Audit Logging** - Comprehensive request logging
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Get Started"
+    href="/shield/getting-started"
+    icon="rocket"
+  >
+    Start using Shield in 5 minutes
+  </Card>
+  <Card
+    title="API Reference"
+    href="/shield/api-reference"
+    icon="code"
+  >
+    Explore the complete Shield API
+  </Card>
+</CardGroup> 

@@ -1,0 +1,415 @@
+---
+title: 'API Keys'
+description: 'Manage API keys for CryptoLay services'
+---
+
+# API Keys
+
+API keys are used to authenticate requests to CryptoLay services. Each API key is associated with a specific account and has configurable permissions and rate limits.
+
+## Creating API Keys
+
+### Create a New API Key
+
+Generate a new API key for your account:
+
+<RequestExample>
+```bash
+curl -X POST https://api.cryptolay.com.br/api/customer/api-keys \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{
+    "name": "Production API Key",
+    "description": "API key for production environment",
+    "permissions": ["shield:encrypt", "shield:decrypt", "ghost:proxy"],
+    "rateLimit": {
+      "requests": 1000,
+      "window": "1m"
+    }
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "id": "key-uuid-123",
+  "name": "Production API Key",
+  "description": "API key for production environment",
+  "key": "cl_live_abc123def456ghi789jkl012mno345pqr678stu901vwx234yz",
+  "permissions": ["shield:encrypt", "shield:decrypt", "ghost:proxy"],
+  "rateLimit": {
+    "requests": 1000,
+    "window": "1m"
+  },
+  "status": "active",
+  "createdAt": "2024-01-01T00:00:00Z",
+  "lastUsed": null
+}
+```
+</ResponseExample>
+
+### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | Yes | A descriptive name for the API key |
+| `description` | string | No | Optional description |
+| `permissions` | array | No | Array of permissions (defaults to all) |
+| `rateLimit` | object | No | Rate limiting configuration |
+
+### Available Permissions
+
+#### Shield Permissions
+- `shield:encrypt` - Encrypt data using Shield
+- `shield:decrypt` - Decrypt data using Shield
+- `shield:manifests` - Manage encryption manifests
+- `shield:rsa-keys` - Manage RSA keys
+
+#### Ghost Permissions
+- `ghost:proxy` - Use Ghost proxy endpoints
+- `ghost:endpoints` - Manage Ghost endpoints
+- `ghost:metrics` - Access Ghost metrics
+- `ghost:aliases` - Manage endpoint aliases
+
+#### Global Permissions
+- `billing:read` - Read billing information
+- `billing:write` - Manage billing settings
+- `profile:read` - Read account profile
+- `profile:write` - Update account profile
+
+## Managing API Keys
+
+### List API Keys
+
+Get all API keys for your account:
+
+<RequestExample>
+```bash
+curl -X GET https://api.cryptolay.com.br/api/customer/api-keys \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "apiKeys": [
+    {
+      "id": "key-uuid-123",
+      "name": "Production API Key",
+      "description": "API key for production environment",
+      "permissions": ["shield:encrypt", "shield:decrypt", "ghost:proxy"],
+      "status": "active",
+      "createdAt": "2024-01-01T00:00:00Z",
+      "lastUsed": "2024-01-15T10:30:00Z"
+    },
+    {
+      "id": "key-uuid-456",
+      "name": "Development API Key",
+      "description": "API key for development environment",
+      "permissions": ["shield:encrypt", "shield:decrypt"],
+      "status": "active",
+      "createdAt": "2024-01-01T00:00:00Z",
+      "lastUsed": "2024-01-14T15:45:00Z"
+    }
+  ]
+}
+```
+</ResponseExample>
+
+### Get API Key Details
+
+Get details for a specific API key:
+
+<RequestExample>
+```bash
+curl -X GET https://api.cryptolay.com.br/api/customer/api-keys/key-uuid-123 \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "id": "key-uuid-123",
+  "name": "Production API Key",
+  "description": "API key for production environment",
+  "permissions": ["shield:encrypt", "shield:decrypt", "ghost:proxy"],
+  "rateLimit": {
+    "requests": 1000,
+    "window": "1m"
+  },
+  "status": "active",
+  "createdAt": "2024-01-01T00:00:00Z",
+  "lastUsed": "2024-01-15T10:30:00Z",
+  "usage": {
+    "totalRequests": 15420,
+    "requestsToday": 1250,
+    "errors": 23
+  }
+}
+```
+</ResponseExample>
+
+### Update API Key
+
+Update API key configuration:
+
+<RequestExample>
+```bash
+curl -X PUT https://api.cryptolay.com.br/api/customer/api-keys/key-uuid-123 \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{
+    "name": "Updated Production API Key",
+    "description": "Updated description",
+    "permissions": ["shield:encrypt", "shield:decrypt", "ghost:proxy", "ghost:metrics"],
+    "rateLimit": {
+      "requests": 2000,
+      "window": "1m"
+    }
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "id": "key-uuid-123",
+  "name": "Updated Production API Key",
+  "description": "Updated description",
+  "permissions": ["shield:encrypt", "shield:decrypt", "ghost:proxy", "ghost:metrics"],
+  "rateLimit": {
+    "requests": 2000,
+    "window": "1m"
+  },
+  "status": "active",
+  "updatedAt": "2024-01-15T12:00:00Z"
+}
+```
+</ResponseExample>
+
+### Revoke API Key
+
+Deactivate an API key:
+
+<RequestExample>
+```bash
+curl -X DELETE https://api.cryptolay.com.br/api/customer/api-keys/key-uuid-123 \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "message": "API key revoked successfully",
+  "id": "key-uuid-123"
+}
+```
+</ResponseExample>
+
+## Using API Keys
+
+### Authentication
+
+Include your API key in the `X-API-Key` header:
+
+```javascript
+// Shield encryption
+const response = await fetch('https://api.cryptolay.com.br/api/encrypt', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-API-Key': 'cl_live_abc123def456ghi789jkl012mno345pqr678stu901vwx234yz'
+  },
+  body: JSON.stringify({
+    manifest_id: 'manifest-uuid',
+    data: { email: 'user@example.com' }
+  })
+});
+
+// Ghost proxy
+const response = await fetch('https://ghost.cryptolay.com.br/e9k1zv', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-API-Key': 'cl_live_abc123def456ghi789jkl012mno345pqr678stu901vwx234yz'
+  },
+  body: JSON.stringify({
+    email: 'user@example.com',
+    password: 'password123'
+  })
+});
+```
+
+### Rate Limiting
+
+Each API key has its own rate limit:
+
+```json
+{
+  "rateLimit": {
+    "requests": 1000,
+    "window": "1m",
+    "burst": 100
+  }
+}
+```
+
+- **requests**: Maximum requests per window
+- **window**: Time window (1m, 5m, 15m, 1h)
+- **burst**: Maximum burst requests
+
+### Permission Checking
+
+API keys are validated for permissions on each request:
+
+```javascript
+// Check if API key has required permission
+if (!apiKey.hasPermission('shield:encrypt')) {
+  return res.status(403).json({
+    error: 'insufficient_permissions',
+    message: 'API key does not have shield:encrypt permission'
+  });
+}
+```
+
+## Best Practices
+
+### Security
+
+#### Never Expose API Keys
+
+```javascript
+// Good: Use environment variables
+const apiKey = process.env.CRYPTOLAY_API_KEY;
+
+// Bad: Hardcode in source code
+const apiKey = 'cl_live_abc123def456ghi789jkl012mno345pqr678stu901vwx234yz';
+```
+
+#### Use Different Keys for Different Environments
+
+```javascript
+// Production
+const productionKey = process.env.CRYPTOLAY_PROD_KEY;
+
+// Development
+const developmentKey = process.env.CRYPTOLAY_DEV_KEY;
+
+// Testing
+const testingKey = process.env.CRYPTOLAY_TEST_KEY;
+```
+
+#### Rotate API Keys Regularly
+
+```javascript
+// Create new key
+const newKey = await createApiKey({
+  name: 'New Production Key',
+  permissions: ['shield:encrypt', 'shield:decrypt']
+});
+
+// Update application
+process.env.CRYPTOLAY_API_KEY = newKey.key;
+
+// Revoke old key
+await revokeApiKey(oldKeyId);
+```
+
+### Organization
+
+#### Use Descriptive Names
+
+```javascript
+// Good: Descriptive names
+const apiKey = await createApiKey({
+  name: 'Mobile App Production',
+  description: 'API key for mobile app in production'
+});
+
+// Bad: Generic names
+const apiKey = await createApiKey({
+  name: 'Key 1',
+  description: 'API key'
+});
+```
+
+#### Group by Environment
+
+```javascript
+// Production keys
+const prodKeys = [
+  { name: 'Web App Production', permissions: ['shield:encrypt', 'shield:decrypt'] },
+  { name: 'Mobile App Production', permissions: ['shield:encrypt', 'shield:decrypt'] },
+  { name: 'Admin Panel Production', permissions: ['shield:encrypt', 'shield:decrypt', 'billing:read'] }
+];
+
+// Development keys
+const devKeys = [
+  { name: 'Web App Development', permissions: ['shield:encrypt', 'shield:decrypt'] },
+  { name: 'Mobile App Development', permissions: ['shield:encrypt', 'shield:decrypt'] }
+];
+```
+
+### Monitoring
+
+#### Track API Key Usage
+
+```javascript
+// Monitor usage patterns
+const keyUsage = await getApiKeyUsage(keyId);
+console.log(`Key ${keyId} used ${keyUsage.totalRequests} times today`);
+```
+
+#### Set Up Alerts
+
+```javascript
+// Alert on unusual usage
+if (keyUsage.requestsToday > 10000) {
+  await sendAlert(`High API usage detected for key ${keyId}`);
+}
+```
+
+## Error Handling
+
+### Common Errors
+
+| Error Code | Description | Solution |
+|------------|-------------|----------|
+| `401` | Invalid API key | Check API key format and validity |
+| `403` | Insufficient permissions | Check API key permissions |
+| `429` | Rate limit exceeded | Wait or increase rate limits |
+| `400` | Invalid request | Check request parameters |
+
+### Example Error Response
+
+```json
+{
+  "error": "insufficient_permissions",
+  "message": "API key does not have shield:encrypt permission",
+  "requiredPermissions": ["shield:encrypt"],
+  "keyPermissions": ["shield:decrypt", "ghost:proxy"]
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Authentication"
+    href="/global/authentication"
+    icon="key"
+  >
+    Learn about authentication methods
+  </Card>
+  <Card
+    title="Request Limits"
+    href="/global/request-limits"
+    icon="gauge"
+  >
+    Understand rate limiting
+  </Card>
+</CardGroup> 

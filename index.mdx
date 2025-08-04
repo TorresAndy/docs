@@ -1,42 +1,61 @@
 ---
-title: "CryptoLay Documentation"
-description: "Field-level encryption service for developers and organizations requiring compliance with GDPR, LGPD, HIPAA, and PCI-DSS."
+title: 'CryptoLay Documentation'
+description: 'Field-level encryption service for developers and organizations requiring compliance with GDPR, LGPD, HIPAA, and PCI-DSS.'
 ---
 
 # CryptoLay Documentation
-
 CryptoLay is a stateless, scalable cryptographic gateway that simplifies field-level encryption for applications. Built for developers and organizations requiring compliance with GDPR, LGPD, HIPAA, and PCI-DSS.
 
 <CardGroup cols={2}>
   <Card title="Quick Start" icon="zap" href="/quickstart">
     Get up and running with CryptoLay in under 5 minutes
   </Card>
-  <Card title="API Reference" icon="code" href="/api-reference/authentication">
+  <Card
+    title="API Reference"
+    href="/api-reference/authentication"
+    icon="code"
+  >
     Complete API documentation with examples
   </Card>
 </CardGroup>
 
-## What is CryptoLay?
+## Our Products
 
-CryptoLay provides a secure, scalable encryption service that allows you to encrypt sensitive data at the field level while maintaining compliance with industry standards. Our platform handles the complexity of key management, encryption algorithms, and audit trails so you can focus on building your application.
+### CryptoLay Shield
 
-### Key Features
+Field-level encryption for JSON payloads, allowing you to encrypt sensitive data while keeping the rest readable.
 
 <CardGroup cols={3}>
   <Card title="AES-256-GCM Encryption" icon="shield">
     Industry-standard encryption with authenticated encryption
   </Card>
-  <Card title="AWS KMS Integration" icon="key">
+  <Card
+    title="AWS KMS Integration"
+    icon="key"
+  >
     Secure key management with AWS Key Management Service
   </Card>
-  <Card title="Compliance Ready" icon="check-circle">
+  <Card
+    title="Compliance Ready"
+    icon="check-circle"
+  >
     Built for GDPR, LGPD, HIPAA, and PCI-DSS compliance
   </Card>
 </CardGroup>
 
+**Perfect for:**
+- Mobile APIs
+- Anti-reconnaissance
+- Abuse prevention
+- DDoS protection
+
+[Learn more about Ghost →](/products/ghost)
+
 ## How It Works
 
-### 1. Create a Manifest
+### Shield - Field-Level Encryption
+
+#### 1. Create a Manifest
 
 Define which fields should be encrypted in your data:
 
@@ -48,9 +67,9 @@ Define which fields should be encrypted in your data:
 }
 ```
 
-### 2. Encrypt Your Data
+#### 2. Encrypt Your Data
 
-Send your data to CryptoLay for encryption:
+Send your JSON payload to Shield for encryption:
 
 ```javascript
 const response = await fetch('https://api.cryptolay.com/api/encrypt', {
@@ -62,18 +81,20 @@ const response = await fetch('https://api.cryptolay.com/api/encrypt', {
   body: JSON.stringify({
     manifest_id: 'manifest-uuid',
     data: {
+      user_id: "12345",
       email: 'user@example.com',
-      phone: '+1234567890'
+      phone: '+1234567890',
+      ssn: '123-45-6789'
     }
   })
 });
 ```
 
-### 3. Store Encrypted Data
+#### 3. Store Encrypted Data
 
 Store the encrypted data and metadata securely in your database.
 
-### 4. Decrypt When Needed
+#### 4. Decrypt When Needed
 
 Retrieve and decrypt data when required:
 
@@ -92,21 +113,159 @@ const decrypted = await fetch('https://api.cryptolay.com/api/decrypt', {
 });
 ```
 
+### Ghost - API Protection
+
+#### 1. Create Endpoint Mappings
+
+Define your endpoint mappings and rotation rules:
+
+```json
+{
+  "name": "API Protection Manifest",
+  "endpoints": {
+    "/api/v1/users/login": {
+      "alias": "/e9k1zv",
+      "rotation": "standard"
+    }
+  }
+}
+```
+
+#### 2. Use Ghost Aliases
+
+Clients use encrypted aliases instead of real endpoints:
+
+```javascript
+// Instead of: POST /api/v1/users/login
+// Use: POST /e9k1zv
+
+const response = await fetch('https://ghost.cryptolay.com.br/e9k1zv', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-API-Key': 'your_api_key'
+  },
+  body: JSON.stringify({
+    email: 'user@example.com',
+    password: 'password123'
+  })
+});
+```
+
+#### 3. Monitor & Analyze
+
+Track usage, detect abuse, and optimize performance:
+
+```javascript
+const metrics = await fetch('https://api.cryptolay.com.br/api/ghost/metrics', {
+  headers: {
+    'X-API-Key': 'your_api_key'
+  }
+});
+```
+
 ## Security Features
 
+### Shield Security
 - **AES-256-GCM Encryption** - Industry-standard encryption
 - **AWS KMS Integration** - Secure key management
 - **API Key Authentication** - Required for all requests
 - **Rate Limiting** - Prevents abuse
 - **Request Logging** - Comprehensive audit trail
 
+## Use Cases
+
+### Healthcare (HIPAA Compliance)
+
+Encrypt patient data to meet HIPAA requirements:
+
+```javascript
+// Encrypt patient information
+const patientData = {
+  name: "John Doe",
+  ssn: "123-45-6789",
+  diagnosis: "Hypertension"
+};
+
+const encrypted = await cryptolay.encrypt({
+  manifestId: 'patient-data-manifest',
+  data: patientData
+});
+```
+
+### Financial Services (PCI-DSS)
+
+Secure payment information:
+
+```javascript
+// Encrypt payment data
+const paymentData = {
+  cardNumber: "4111-1111-1111-1111",
+  cvv: "123",
+  expiryDate: "12/25"
+};
+
+const encrypted = await cryptolay.encrypt({
+  manifestId: 'payment-data-manifest',
+  data: paymentData
+});
+```
+
+### E-commerce (GDPR Compliance)
+
+Protect customer personal data:
+
+```javascript
+// Encrypt customer information
+const customerData = {
+  email: "customer@example.com",
+  address: "123 Main St",
+  phone: "+1234567890"
+};
+
+const encrypted = await cryptolay.encrypt({
+  manifestId: 'customer-data-manifest',
+  data: customerData
+});
+```
+
+## Pricing
+
+### Free Tier
+- 5,000 encryptions/month
+- Basic encryption/decryption
+- Community support
+- 5GB encrypted storage
+
+### Pro Tier
+- 100,000 encryptions/month
+- Advanced key management
+- Priority support
+- 50GB encrypted storage
+- Custom integrations
+
+### Enterprise
+- Unlimited encryptions
+- HIPAA & SOC 2 compliance
+- Dedicated support
+- Custom SLA
+- Advanced security features
+
 ## Next Steps
 
 <CardGroup cols={2}>
-  <Card title="Quick Start" icon="rocket" href="/quickstart">
+  <Card
+    title="Quick Start"
+    href="/quickstart"
+    icon="rocket"
+  >
     Get started in 5 minutes
   </Card>
-  <Card title="API Reference" icon="code" href="/api-reference/authentication">
+  <Card
+    title="API Reference"
+    href="/api-reference/authentication"
+    icon="code"
+  >
     Explore the complete API
   </Card>
 </CardGroup>

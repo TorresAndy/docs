@@ -1,0 +1,178 @@
+---
+title: 'CryptoLay Shield'
+description: 'Field-level encryption for JSON payloads'
+---
+
+# CryptoLay Shield
+
+CryptoLay Shield provides field-level encryption for JSON payloads, allowing you to encrypt sensitive data while keeping the rest readable. Perfect for protecting PII, banking data, and authentication tokens.
+
+## What is Shield?
+
+Shield is a stateless, scalable cryptographic gateway that simplifies field-level encryption for applications. Built for developers and organizations requiring compliance with GDPR, LGPD, HIPAA, and PCI-DSS.
+
+### Key Features
+
+<CardGroup cols={3}>
+  <Card
+    title="AES-256-GCM Encryption"
+    icon="shield"
+  >
+    Industry-standard encryption with authenticated encryption
+  </Card>
+  <Card
+    title="Field-Level Control"
+    icon="code"
+  >
+    Encrypt specific fields while keeping others readable
+  </Card>
+  <Card
+    title="JSON Native"
+    icon="database"
+  >
+    Works seamlessly with JSON payloads and responses
+  </Card>
+</CardGroup>
+
+## How It Works
+
+### 1. Create a Manifest
+
+Define which fields should be encrypted in your data:
+
+```json
+{
+  "name": "User Data Manifest",
+  "fields": ["email", "phone", "ssn"],
+  "description": "Encrypts sensitive user information"
+}
+```
+
+### 2. Encrypt Your Data
+
+Send your JSON payload to Shield for encryption:
+
+```javascript
+const response = await fetch('https://api.cryptolay.com.br/api/encrypt', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-API-Key': 'your_api_key'
+  },
+  body: JSON.stringify({
+    manifest_id: 'manifest-uuid',
+    data: {
+      user_id: "12345",
+      email: 'user@example.com',
+      phone: '+1234567890',
+      ssn: '123-45-6789'
+    }
+  })
+});
+```
+
+### 3. Store Encrypted Data
+
+Store the encrypted data and metadata securely in your database.
+
+### 4. Decrypt When Needed
+
+Retrieve and decrypt data when required:
+
+```javascript
+const decrypted = await fetch('https://api.cryptolay.com.br/api/decrypt', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-API-Key': 'your_api_key'
+  },
+  body: JSON.stringify({
+    manifest_id: 'manifest-uuid',
+    data: encryptedData,
+    meta: metadata
+  })
+});
+```
+
+## Use Cases
+
+### Healthcare (HIPAA Compliance)
+
+Encrypt patient data to meet HIPAA requirements:
+
+```javascript
+// Encrypt patient information
+const patientData = {
+  name: "John Doe",
+  ssn: "123-45-6789",
+  diagnosis: "Hypertension"
+};
+
+const encrypted = await cryptolay.encrypt({
+  manifestId: 'patient-data-manifest',
+  data: patientData
+});
+```
+
+### Financial Services (PCI-DSS)
+
+Secure payment information:
+
+```javascript
+// Encrypt payment data
+const paymentData = {
+  cardNumber: "4111-1111-1111-1111",
+  cvv: "123",
+  expiryDate: "12/25"
+};
+
+const encrypted = await cryptolay.encrypt({
+  manifestId: 'payment-data-manifest',
+  data: paymentData
+});
+```
+
+### E-commerce (GDPR Compliance)
+
+Protect customer personal data:
+
+```javascript
+// Encrypt customer information
+const customerData = {
+  email: "customer@example.com",
+  address: "123 Main St",
+  phone: "+1234567890"
+};
+
+const encrypted = await cryptolay.encrypt({
+  manifestId: 'customer-data-manifest',
+  data: customerData
+});
+```
+
+## Security Features
+
+- **AES-256-GCM Encryption** - Industry-standard encryption
+- **AWS KMS Integration** - Secure key management
+- **API Key Authentication** - Required for all requests
+- **Rate Limiting** - Prevents abuse
+- **Request Logging** - Comprehensive audit trail
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Get Started"
+    href="/shield/getting-started"
+    icon="rocket"
+  >
+    Start using Shield in 5 minutes
+  </Card>
+  <Card
+    title="API Reference"
+    href="/shield/api-reference"
+    icon="code"
+  >
+    Explore the complete Shield API
+  </Card>
+</CardGroup> 

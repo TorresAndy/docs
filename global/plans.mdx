@@ -1,0 +1,390 @@
+---
+title: 'Plans & Pricing'
+description: 'CryptoLay pricing plans and features'
+---
+
+# Plans & Pricing
+
+CryptoLay offers flexible pricing plans for both Shield and Ghost products. Choose the plan that best fits your needs and scale as you grow.
+
+## Shield Plans
+
+### Free Tier
+
+Perfect for getting started with field-level encryption.
+
+<CardGroup cols={2}>
+  <Card
+    title="Price"
+    icon="dollar-sign"
+  >
+    Free
+  </Card>
+  <Card
+    title="Encryptions"
+    icon="shield"
+  >
+    5,000/month
+  </Card>
+</CardGroup>
+
+**Features:**
+- 5,000 encryptions/month
+- Basic encryption/decryption
+- Community support
+- 5GB encrypted storage
+- Standard encryption algorithms
+- Basic audit logs
+
+**Best For:**
+- Development and testing
+- Small projects
+- Learning and experimentation
+
+### Pro Tier
+
+Advanced features for production applications.
+
+<CardGroup cols={2}>
+  <Card
+    title="Price"
+    icon="dollar-sign"
+  >
+    $99/month
+  </Card>
+  <Card
+    title="Encryptions"
+    icon="shield"
+  >
+    100,000/month
+  </Card>
+</CardGroup>
+
+**Features:**
+- 100,000 encryptions/month
+- Advanced key management
+- Priority support
+- 50GB encrypted storage
+- Custom integrations
+- Advanced audit logs
+- RSA key management
+- Custom encryption algorithms
+
+**Best For:**
+- Production applications
+- Growing businesses
+- Compliance requirements
+
+### Enterprise
+
+Unlimited scale for large organizations.
+
+<CardGroup cols={2}>
+  <Card
+    title="Price"
+    icon="dollar-sign"
+  >
+    Custom
+  </Card>
+  <Card
+    title="Encryptions"
+    icon="shield"
+  >
+    Unlimited
+  </Card>
+</CardGroup>
+
+**Features:**
+- Unlimited encryptions
+- HIPAA & SOC 2 compliance
+- Dedicated support
+- Custom SLA
+- Advanced security features
+- Custom integrations
+- On-premise options
+- White-label solutions
+
+**Best For:**
+- Large enterprises
+- Healthcare organizations
+- Financial institutions
+- Government agencies
+
+## Ghost Plans
+
+### Free Tier
+
+Start protecting your APIs for free.
+
+<CardGroup cols={2}>
+  <Card
+    title="Price"
+    icon="dollar-sign"
+  >
+    Free
+  </Card>
+  <Card
+    title="Requests"
+    icon="route"
+  >
+    10,000/month
+  </Card>
+</CardGroup>
+
+**Features:**
+- 10,000 proxy requests/month
+- Standard rotation (24h)
+- Basic rate limiting
+- Community support
+- 5 endpoints maximum
+- Basic metrics
+
+**Best For:**
+- Development and testing
+- Small APIs
+- Learning and experimentation
+
+### Pro Tier
+
+Enhanced protection for production APIs.
+
+<CardGroup cols={2}>
+  <Card
+    title="Price"
+    icon="dollar-sign"
+  >
+    $149/month
+  </Card>
+  <Card
+    title="Requests"
+    icon="route"
+  >
+    500,000/month
+  </Card>
+</CardGroup>
+
+**Features:**
+- 500,000 proxy requests/month
+- All rotation policies (standard, aggressive, super-aggressive)
+- Advanced rate limiting
+- Priority support
+- 50 endpoints maximum
+- Advanced metrics and analytics
+- DDoS protection
+- Custom rate limits
+
+**Best For:**
+- Production APIs
+- Growing applications
+- High-security requirements
+
+### Enterprise
+
+Maximum protection for critical systems.
+
+<CardGroup cols={2}>
+  <Card
+    title="Price"
+    icon="dollar-sign"
+  >
+    Custom
+  </Card>
+  <Card
+    title="Requests"
+    icon="route"
+  >
+    Unlimited
+  </Card>
+</CardGroup>
+
+**Features:**
+- Unlimited proxy requests
+- All rotation policies
+- Advanced DDoS protection
+- Dedicated support
+- Custom SLA
+- Unlimited endpoints
+- Advanced analytics
+- Custom integrations
+- On-premise options
+
+**Best For:**
+- Large-scale APIs
+- Critical infrastructure
+- Government systems
+- Financial services
+
+## Combined Plans
+
+### Shield + Ghost Bundle
+
+Get both products at a discounted rate.
+
+<CardGroup cols={2}>
+  <Card
+    title="Price"
+    icon="dollar-sign"
+  >
+    $199/month
+  </Card>
+  <Card
+    title="Savings"
+    icon="percent"
+  >
+    20% off
+  </Card>
+</CardGroup>
+
+**Features:**
+- 100,000 Shield encryptions/month
+- 500,000 Ghost requests/month
+- All Shield and Ghost features
+- Priority support
+- Advanced analytics
+- Custom integrations
+
+## Plan Comparison
+
+### Shield Comparison
+
+| Feature | Free | Pro | Enterprise |
+|---------|------|-----|------------|
+| Encryptions/month | 5,000 | 100,000 | Unlimited |
+| Storage | 5GB | 50GB | Unlimited |
+| Support | Community | Priority | Dedicated |
+| RSA Keys | ❌ | ✅ | ✅ |
+| Custom Algorithms | ❌ | ✅ | ✅ |
+| Compliance | ❌ | Basic | Full |
+| SLA | ❌ | ❌ | Custom |
+
+### Ghost Comparison
+
+| Feature | Free | Pro | Enterprise |
+|---------|------|-----|------------|
+| Requests/month | 10,000 | 500,000 | Unlimited |
+| Endpoints | 5 | 50 | Unlimited |
+| Rotation Policies | Standard | All | All |
+| DDoS Protection | Basic | Advanced | Maximum |
+| Analytics | Basic | Advanced | Custom |
+| Support | Community | Priority | Dedicated |
+| SLA | ❌ | ❌ | Custom |
+
+## Billing & Usage
+
+### Usage Tracking
+
+Monitor your usage across both products:
+
+```javascript
+// Get current usage
+const usage = await fetch('https://api.cryptolay.com.br/api/billing/usage', {
+  headers: {
+    'X-API-Key': 'your_api_key'
+  }
+});
+
+// Response includes both Shield and Ghost usage
+{
+  "shield": {
+    "encryptions": 1250,
+    "limit": 5000,
+    "remaining": 3750
+  },
+  "ghost": {
+    "requests": 850,
+    "limit": 10000,
+    "remaining": 9150
+  }
+}
+```
+
+### Overages
+
+When you exceed your plan limits:
+
+- **Free Tier**: Requests are blocked until next billing cycle
+- **Pro Tier**: Pay per additional request/encryption
+- **Enterprise**: Unlimited usage included
+
+### Billing Cycles
+
+- **Monthly**: Standard billing cycle
+- **Annual**: 20% discount for annual prepayment
+- **Custom**: Enterprise customers can negotiate custom terms
+
+## Upgrading Plans
+
+### Upgrade Process
+
+1. **Choose New Plan**: Select the plan that fits your needs
+2. **Update Billing**: Update payment information if needed
+3. **Immediate Access**: New limits take effect immediately
+4. **Prorated Billing**: Only pay for the difference
+
+### Downgrading
+
+- Can downgrade at any time
+- Changes take effect at next billing cycle
+- Unused credits are applied to final bill
+
+## Support Levels
+
+### Community Support
+
+- Documentation and guides
+- Community forums
+- Email support (48h response)
+
+### Priority Support
+
+- Email support (24h response)
+- Live chat during business hours
+- Phone support for critical issues
+- Dedicated support engineer
+
+### Enterprise Support
+
+- 24/7 phone support
+- Dedicated account manager
+- Custom SLA guarantees
+- On-site support available
+
+## Compliance & Security
+
+### Compliance Certifications
+
+| Certification | Free | Pro | Enterprise |
+|---------------|------|-----|------------|
+| SOC 2 Type II | ❌ | ❌ | ✅ |
+| HIPAA | ❌ | ❌ | ✅ |
+| GDPR | ✅ | ✅ | ✅ |
+| LGPD | ✅ | ✅ | ✅ |
+| PCI-DSS | ❌ | Basic | Full |
+
+### Security Features
+
+All plans include:
+- AES-256-GCM encryption
+- TLS 1.3 transport security
+- API key authentication
+- Rate limiting
+- Request logging
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Get Started"
+    href="https://cryptolay.com.br/signup"
+    icon="rocket"
+  >
+    Start with our free tier
+  </Card>
+  <Card
+    title="Contact Sales"
+    href="https://cryptolay.com.br/contact"
+    icon="phone"
+  >
+    Discuss enterprise options
+  </Card>
+</CardGroup> 
